@@ -1,12 +1,21 @@
 const path = require('path')
 
 module.exports = {
+    css: {
+        loaderOptions: {
+            sass: {
+                prependData: `
+                  @import "@/styles/index.scss";
+                `
+            }
+        }
+    },
     //打包配置
     publicPath: './',
     //svg
     chainWebpack: config => {
         const svgRule = config.module.rule('svg')
-        // 清除已有的所有 loader。
+            // 清除已有的所有 loader。
         svgRule.uses.clear()
         svgRule
             .test(/\.svg$/)
