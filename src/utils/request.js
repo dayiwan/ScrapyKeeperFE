@@ -3,7 +3,7 @@ import { Message } from 'element-ui'
 
 // 创建axios实例
 const service = axios.create({
-    baseURL: 'http://172.16.13.22:5060',
+    baseURL: 'http://localhost:5060',
     timeout: 95000, // 请求超时时间
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
     withCredentials: true // 跨域session
@@ -17,13 +17,12 @@ service.interceptors.response.use(
          */
         if (response.data.status !== 'ok') {
             Message.error({ message: response.message })
-            return 
+            return
         } else {
             return response.data.data
         }
     },
     error => {
-        console.log(error)
         if (error.response && error.response.data && error.response.data.message) {
             Message.error({
                 message: error.response.data.message

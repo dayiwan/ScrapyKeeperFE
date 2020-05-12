@@ -27,9 +27,19 @@
 </template>
 
 <script>
-import { getAllProject, apiEditProjectInfo, delProject, apiAddProject } from "@/api/project";
+import {
+  getAllProject,
+  apiEditProjectInfo,
+  delProject,
+  apiAddProject
+} from "@/api/project";
 import { apiAddTmpl, apiGetTmpl, delTmpl, apiEditTmpl } from "@/api/templates";
-import { apidRunImmediately, apidCancleRunning, apiAddScheduler, apiCancelScheduler } from "@/api/scheduler";
+import {
+  apidRunImmediately,
+  apidCancleRunning,
+  apiAddScheduler,
+  apiCancelScheduler
+} from "@/api/scheduler";
 import { apiOriginalLog } from "@/api/originalLog";
 import EditBaseInfo from "./components/EditBaseInfo";
 import AddProjectDialog from "./components/AddProjectDialog";
@@ -99,7 +109,7 @@ export default {
       });
       const data = await apiGetTmpl();
       this.tplArr = data;
-      loading.close()
+      loading.close();
     },
     // 删除
     async del_project(id) {
@@ -115,7 +125,7 @@ export default {
         text: "正在添加, 请耐心等候！",
         spinner: "el-icon-loading"
       });
-      
+
       const formData = new FormData();
       for (let key in form) {
         if (form[key] instanceof File) {
@@ -133,11 +143,12 @@ export default {
         })
         .catch(e => {
           console.error(e);
-          _self.$message.console.error('添加失败');
+          _self.$message.console.error("添加失败");
+        })
+        .finally(() => {
+          loading.close();
+          _self.addProjDialogShow = false;
         });
-        loading.close()
-        _self.addProjDialogShow = false;
-
     },
     // 取消添加模板
     addProjectCancle() {

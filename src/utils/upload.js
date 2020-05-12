@@ -4,7 +4,7 @@ import store from '../store'
 
 // 创建axios实例
 const service = axios.create({
-    baseURL: 'http://172.16.13.22:5060', // api的base_url
+    baseURL: 'http://localhost:5060', // api的base_url
     timeout: 15000, // 请求超时时间
     headers: { 'Content-Type': 'multipart/form-data' }
 })
@@ -37,23 +37,20 @@ service.interceptors.response.use(
             }
             return Promise.reject(res.msg)
         } else {
-            return response.data
+            return res.data
         }
     },
     error => {
-        if (error.msg) {
-            Message({
-                message: error.msg,
-                type: 'error',
-                duration: 5 * 1000
+        if (error.response && error.response.data && error.response.data.message) {
+            Message.error({
+                message: error.response.data.message
             })
         } else {
-            Message({
-                message: error,
-                type: 'error',
-                duration: 5 * 1000
+            Message.error({
+                message: error
             })
         }
+        console.log('err ' + error) // for debug
         return Promise.reject(error)
     }
 )

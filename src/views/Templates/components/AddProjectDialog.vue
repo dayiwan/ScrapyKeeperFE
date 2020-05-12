@@ -6,52 +6,51 @@
       :show-close="false"
       :close-on-click-modal="false"
     >
+      <el-upload
+        ref="tplFile"
+        action
+        :file-list="tplZips"
+        :auto-upload="false"
+        :limit="1"
+        :on-change="fileChange"
+      >
+        <el-button slot="trigger" size="small" type="primary">上传模板代码（zip文件）</el-button>
+      </el-upload>
+
+      <el-upload
+        class="avatar-uploader"
+        action
+        :show-file-list="false"
+        :on-change="imgChange"
+        :auto-upload="false"
+      >
+        <img v-if="tplImg" :src="tplImg" class="tpl-img" />
+        <el-button v-else size="small" type="primary">上传模板图片</el-button>
+      </el-upload>
+
       <el-form :model="form" label-position="top">
-        <el-form-item label="模板名称(英文|与模板工程名相同)" prop="tpl_name">
+        <el-form-item label="模板名称(英文|与模板工程名相同)" prop="tpl_name" v-if="form.tpl_name != null">
           <el-input size="mini" v-model="form.tpl_name" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="模板中文名" prop="tpl_zh">
+        <el-form-item label="模板中文名" prop="tpl_zh" v-if="form.tpl_zh != null">
           <el-input size="mini" v-model="form.tpl_zh" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="模板类型" prop="category">
+        <el-form-item label="模板类型" prop="category" v-if="form.tpl_type != null">
           <el-radio v-model="form.tpl_type" :label="0">添加即创建工程</el-radio>
           <el-radio v-model="form.tpl_type" :label="1">从已有工程动态添加数据</el-radio>
         </el-form-item>
 
-        <el-form-item label="模板输入" prop="category">
-          <div class="tpl-input" v-for="(inputItem, index) in tplInput" :key="index">
-            <span>要输入的项：</span>
-            <el-input size="mini" v-model="inputItem.key" auto-complete="off"></el-input>
-            <span>输入时的中文提示语：</span>
-            <el-input size="mini" v-model="inputItem.tip" auto-complete="off"></el-input>
-            <el-button size="mini" type="danger" icon="el-icon-delete" @click="delInput(index)"></el-button>
+        <el-form-item label="模板输入" class="tpl-input" v-if="tplInput!= null">
+          <div class="tpl-input-row" v-for="(inputItem, k) in tplInput" :key="k">
+            <span class="tpl-input-title">录入key：</span>
+            <span>{{ k }}</span>
+            <span class="tpl-input-title">提示语：</span>
+            <span>{{ inputItem.tip }}</span>
+            <span class="tpl-input-title">默认值：</span>
+            <span>{{ inputItem.value }}</span>
           </div>
-
-          <el-button @click="addInput" size="mini">添加输入</el-button>
-
-          <el-upload
-            ref="tplFile"
-            action
-            :file-list="tplZips"
-            :auto-upload="false"
-            :limit="1"
-            :on-change="fileChange"
-          >
-            <el-button slot="trigger" size="small" type="primary">上传模板代码（zip文件）</el-button>
-          </el-upload>
-
-          <el-upload
-            class="avatar-uploader"
-            action
-            :show-file-list="false"
-            :on-change="imgChange"
-            :auto-upload="false"
-          >
-            <img v-if="tplImg" :src="tplImg" class="tpl-img" />
-            <el-button v-else size="small" type="primary">上传模板图片</el-button>
-          </el-upload>
         </el-form-item>
       </el-form>
 
@@ -64,6 +63,7 @@
 </template>
 
 <script>
+import upload from "@/utils/upload";
 export default {
   props: ["visible"],
   data() {
@@ -71,73 +71,72 @@ export default {
       form: {
         tpl_name: null,
         tpl_zh: null,
-        tpl_type: 0,
+        tpl_type: null,
         tpl_input: null,
         tpl_zip: null,
         tpl_img: null
       },
-      tplInput: [
-        {
-          key: "start_url",
-          tip: "请输入url",
-          value: ""
-        }
-      ],
+      tplInput: null,
       tplZips: [],
       tplImg: null,
+      options: [
+        {
+          value: "news",
+          label: "通用型新闻网页"
+        },
+        {
+          value: "weibo",
+          label: "新浪微博"
+        },
+        {
+          value: "gongzhonghao",
+          label: "微信公众号"
+        }
+      ],
       formLabelWidth: "200"
     };
   },
   methods: {
     submit() {
-      if (!this.checkTplInput()) {
+      if (!this.form.tpl_zip) {
         this.$message({
           type: "error",
-          message: "所填字段不能为空!"
+          message: "请上传文件!"
         });
-      } else {
-        // 将输入转换成字典
-        const tpl_input = {}
-        for (const input of this.tplInput) {
-          const key = input.key
-          delete input.key
-          tpl_input[key] = input
-        }
-        this.form.tpl_input = JSON.stringify(tpl_input);
-        this.$emit("addProjectSubmit", this.form);
+        return;
       }
+      if (!this.form.tpl_img) {
+        this.$message({
+          type: "error",
+          message: "请上传图片!"
+        });
+        return;
+      }
+      this.form.tpl_input = JSON.stringify(this.tplInput);
+      this.$emit("addProjectSubmit", this.form);
     },
     cancle() {
       this.$emit("addProjectCancle");
     },
-    addInput() {
-      this.tplInput.push({
-        key: "",
-        tip: "",
-        type: '',
-        value: ''
-      });
-    },
-    delInput(i) {
-      if (this.tplInput.length == 1) {
-        this.$message.info("至少添加一种输入");
-        return;
-      }
-      this.tplInput.splice(i, 1);
-    },
-    checkTplInput() {
-      if (!this.form.tpl_name || !this.form.tpl_zh) {
-        return false;
-      }
-      for (const inputItem of this.tplInput) {
-        if (inputItem.key == "" || inputItem.tip == "") {
-          return false;
-        }
-      }
-      return true;
-    },
     fileChange(file, fileList) {
       this.form.tpl_zip = file.raw;
+      const formData = new FormData();
+      let _self = this;
+      formData.append("tpl_zip", null);
+      formData.set("tpl_zip", file.raw);
+      upload
+        .post("/template_parser", formData)
+        .then(data => {
+          _self.form.tpl_name = data.name;
+          _self.form.tpl_zh = data.name_zh;
+          _self.form.tpl_type = data.type;
+          _self.tplInput = data.tpl_input;
+          _self.form.tpl_input = JSON.stringify(data.tpl_input);
+        })
+        .catch(e => {
+          console.error(e);
+          _self.$message.console.error("添加失败");
+        });
     },
     imgChange(file) {
       this.form.tpl_img = file.raw;
@@ -149,21 +148,14 @@ export default {
 
 <style lang="scss">
 .tpl-input {
-  @include flex(row, flex-start);
   margin-bottom: 10px;
-  span {
-    display: block;
-    text-align: right;
-    margin: 0 15px;
+  .tpl-input-title {
+    display: inline;
+    font-weight: bolder;
+    margin-left: 15px;
     &:first-child {
       margin-left: 0;
     }
-  }
-  .el-input {
-    width: 150px !important;
-  }
-  .el-button {
-    margin-left: 10px;
   }
 }
 .tpl-img {
