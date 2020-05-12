@@ -23,7 +23,6 @@ service.interceptors.response.use(
         }
     },
     error => {
-        console.log(error)
         if (error.response && error.response.data && error.response.data.message) {
             Message.error({
                 message: error.response.data.message

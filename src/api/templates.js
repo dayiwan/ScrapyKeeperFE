@@ -53,18 +53,3 @@ export function apiAddTmpl(form) {
         })
     })
 }
-
-//模板解析
-export function apiTmplParse(form) {
-    return new Promise((resolve, reject) => {
-        request({
-            url: '/template',
-            method: 'post',
-            data: querystring.stringify(form)
-        }).then((res) => {
-            resolve(res)
-        }).catch((e) => {
-            reject(e)
-        })
-    })
-}
