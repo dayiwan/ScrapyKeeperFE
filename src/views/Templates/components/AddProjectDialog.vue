@@ -6,21 +6,43 @@
       :show-close="false"
       :close-on-click-modal="false"
     >
+      <el-upload
+        ref="tplFile"
+        action
+        :file-list="tplZips"
+        :auto-upload="false"
+        :limit="1"
+        :on-change="fileChange"
+      >
+        <el-button slot="trigger" size="small" type="primary">上传模板代码（zip文件）</el-button>
+      </el-upload>
+
+      <el-upload
+        class="avatar-uploader"
+        action
+        :show-file-list="false"
+        :on-change="imgChange"
+        :auto-upload="false"
+      >
+        <img v-if="tplImg" :src="tplImg" class="tpl-img" />
+        <el-button v-else size="small" type="primary">上传模板图片</el-button>
+      </el-upload>
+
       <el-form :model="form" label-position="top">
-        <el-form-item label="模板名称(英文|与模板工程名相同)" prop="tpl_name">
+        <el-form-item label="模板名称(英文|与模板工程名相同)" prop="tpl_name" v-if="form.tpl_name != null">
           <el-input size="mini" v-model="form.tpl_name" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="模板中文名" prop="tpl_zh">
+        <el-form-item label="模板中文名" prop="tpl_zh" v-if="form.tpl_zh != null">
           <el-input size="mini" v-model="form.tpl_zh" auto-complete="off"></el-input>
         </el-form-item>
 
-        <el-form-item label="模板类型" prop="category">
+        <el-form-item label="模板类型" prop="category" v-if="form.tpl_type != null">
           <el-radio v-model="form.tpl_type" :label="0">添加即创建工程</el-radio>
           <el-radio v-model="form.tpl_type" :label="1">从已有工程动态添加数据</el-radio>
         </el-form-item>
 
-        <el-form-item label="模板输入" prop="category">
+        <el-form-item label="模板输入" prop="category" v-if="form.tpl_input != null">
           <div class="tpl-input" v-for="(inputItem, index) in tplInput" :key="index">
             <span>要输入的项：</span>
             <el-input size="mini" v-model="inputItem.key" auto-complete="off"></el-input>
@@ -28,28 +50,6 @@
             <el-input size="mini" v-model="inputItem.tip" auto-complete="off"></el-input>
             <el-button size="mini" type="danger" icon="el-icon-delete" @click="delInput(index)"></el-button>
           </div>
-
-          <el-upload
-            ref="tplFile"
-            action
-            :file-list="tplZips"
-            :auto-upload="false"
-            :limit="1"
-            :on-change="fileChange"
-          >
-            <el-button slot="trigger" size="small" type="primary">上传模板代码（zip文件）</el-button>
-          </el-upload>
-
-          <el-upload
-            class="avatar-uploader"
-            action
-            :show-file-list="false"
-            :on-change="imgChange"
-            :auto-upload="false"
-          >
-            <img v-if="tplImg" :src="tplImg" class="tpl-img" />
-            <el-button v-else size="small" type="primary">上传模板图片</el-button>
-          </el-upload>
         </el-form-item>
       </el-form>
 
