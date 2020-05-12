@@ -22,8 +22,8 @@ export function apiAddmachine(machine) {
       url: 'server_machine',
       method: 'post',
       data: querystring.stringify({
-        server_ip: machine.server_ip,
-        server_status: machine.server_status,
+        url: machine.server_ip,
+        status: machine.server_status,
         is_master: machine.is_master
       })
     }).then((res) => {
@@ -35,13 +35,13 @@ export function apiAddmachine(machine) {
 }
 
 // 删除服务器
-export function apiDelMachine(id) {
+export function apiDelMachine(url) {
   return new Promise((resolve, reject) => {
     request({
       url: 'server_machine',
       method: 'detele',
       params: {
-        id
+        url
       }
     }).then((res) => {
       resolve(res)

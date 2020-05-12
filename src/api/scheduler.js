@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 const querystring = require('querystring')
 
-export function apidRunImmediately(id) {
+export function apidRunImmediately(params) {
   return request({
     url: '/scheduler',
     method: 'get',
-    params: { id }
+    params: params
   })
 }
 

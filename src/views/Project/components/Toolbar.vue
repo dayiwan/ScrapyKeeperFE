@@ -13,8 +13,8 @@
       <span>状态:</span>
       <el-select v-model="state" size="mini" placeholder="请选择" @change="State">
         <el-option label="全部" value=""></el-option>
-        <el-option label="休眠" value="2"></el-option>
-        <el-option label="运行中" value="3"></el-option>
+        <el-option label="休眠" value="休眠"></el-option>
+        <el-option label="运行中" value="运行中"></el-option>
       </el-select>
     </div>
     <div class="search">
@@ -58,7 +58,6 @@ export default {
 
 <style lang="scss" scoped>
 .operate {
-  padding-bottom: 10px;
   display: flex;
   flex-direction: row;
   background-color: white;
@@ -69,6 +68,9 @@ export default {
     font-size: 14px;
     color: gray;
     padding-right: 25px;
+    span{
+      padding-right: 5px;
+    }
   }
   .search {
     padding-left: 26px;

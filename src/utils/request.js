@@ -5,7 +5,7 @@ import { Message } from 'element-ui'
 const service = axios.create({
     baseURL: 'http://172.16.13.22:5060',
     timeout: 95000, // 请求超时时间
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
     withCredentials: true // 跨域session
 })
 
@@ -23,9 +23,16 @@ service.interceptors.response.use(
         }
     },
     error => {
-        Message.error({
-            message: error
-        })
+        console.log(error)
+        if (error.response && error.response.data && error.response.data.message) {
+            Message.error({
+                message: error.response.data.message
+            })
+        } else {
+            Message.error({
+                message: error
+            })
+        }
         console.log('err ' + error) // for debug
         return Promise.reject(error)
     }

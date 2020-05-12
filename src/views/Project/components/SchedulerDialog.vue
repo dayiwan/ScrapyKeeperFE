@@ -1,6 +1,6 @@
 <template>
   <div class="scheduler">
-    <el-dialog :title="form.project_alias+'-调度任务'" :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
+    <el-dialog :title="form.project_name_zh+'-调度任务'" :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
       <div class="tip">时间参数</div>
       <div class="sub">
         <el-tabs type="border-card">
@@ -79,7 +79,7 @@
     border-left: 2px solid steelblue;
     margin: 10px 0px 0px 0px;
   }
-  .el-checkbox:nth-child(1){
-    margin-left: 30px;
-  }
+  // .el-checkbox:nth-child(1){
+  //   margin-left: 30px;
+  // }
 </style>>

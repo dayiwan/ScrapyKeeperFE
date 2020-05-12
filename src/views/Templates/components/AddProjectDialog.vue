@@ -29,6 +29,8 @@
             <el-button size="mini" type="danger" icon="el-icon-delete" @click="delInput(index)"></el-button>
           </div>
 
+          <el-button @click="addInput" size="mini">添加输入</el-button>
+
           <el-upload
             ref="tplFile"
             action
@@ -77,25 +79,12 @@ export default {
       tplInput: [
         {
           key: "start_url",
-          tip: "请输入url"
+          tip: "请输入url",
+          value: ""
         }
       ],
       tplZips: [],
       tplImg: null,
-      options: [
-        {
-          value: "news",
-          label: "通用型新闻网页"
-        },
-        {
-          value: "weibo",
-          label: "新浪微博"
-        },
-        {
-          value: "gongzhonghao",
-          label: "微信公众号"
-        }
-      ],
       formLabelWidth: "200"
     };
   },
@@ -107,7 +96,14 @@ export default {
           message: "所填字段不能为空!"
         });
       } else {
-        this.form.tpl_input = JSON.stringify(this.tplInput);
+        // 将输入转换成字典
+        const tpl_input = {}
+        for (const input of this.tplInput) {
+          const key = input.key
+          delete input.key
+          tpl_input[key] = input
+        }
+        this.form.tpl_input = JSON.stringify(tpl_input);
         this.$emit("addProjectSubmit", this.form);
       }
     },
@@ -117,7 +113,9 @@ export default {
     addInput() {
       this.tplInput.push({
         key: "",
-        tip: ""
+        tip: "",
+        type: '',
+        value: ''
       });
     },
     delInput(i) {

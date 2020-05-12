@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 const querystring = require('querystring')
 
-export function getAllProject(page_index, page_szie) {
+export function getAllProject(form) {
   return request({
     url: '/project',
     method: 'get',
-    params: { page_index, page_szie }
+    params: form 
   })
 }
 
@@ -47,3 +47,52 @@ export function apiAddProject(form) {
     })
   })
 }
+
+// 获取趋势图
+export function getDataTrend(params) {
+  return request({
+    url: '/data_trend',
+    method: 'get',
+    params: params
+  })
+}
+
+//获取待采队列
+export function apiGetSpareUrl(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/redis',
+      method: 'post',
+      data: querystring.stringify(params)
+    }).then((res) => {
+      resolve(res)
+    }).catch((e) => {
+      reject(e)
+    })
+  })
+}
+
+//获取mysql数据样例
+export function apiGetDataDetail(params) {
+  return new Promise((resolve, reject) => {
+    request({
+      url: '/data_example',
+      method: 'post',
+      data: querystring.stringify(params)
+    }).then((res) => {
+      resolve(res)
+    }).catch((e) => {
+      reject(e)
+    })
+  })
+}
+
+//处理日志信息
+export function delJournakApi(params) {
+  return request({
+    url: '/log_manage/error',
+    method: 'delete',
+    data: querystring.stringify(params)
+  })
+}
+
