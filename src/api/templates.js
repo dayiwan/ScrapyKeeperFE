@@ -2,7 +2,7 @@ import request from '@/utils/request'
 const querystring = require('querystring')
 
 //编辑模板
-export function apiEditModel(form) {
+export function apiEditTmpl(form) {
     return new Promise((resolve, reject) => {
         request({
             url: '/template',
@@ -17,7 +17,7 @@ export function apiEditModel(form) {
 }
 
 // 删除模板
-export function delModel(id) {
+export function delTmpl(id) {
     return request({
         url: '/template',
         method: 'delete',
@@ -27,12 +27,11 @@ export function delModel(id) {
     })
 }
 //获取模板列表
-export function apiGetModel(params) {
+export function apiGetTmpl() {
     return new Promise((resolve, reject) => {
         request({
             url: '/template',
             method: 'get',
-            params: params
         }).then((res) => {
             resolve(res)
         }).catch((e) => {
@@ -41,7 +40,22 @@ export function apiGetModel(params) {
     })
 }
 //添加模板
-export function apiAddModel(form) {
+export function apiAddTmpl(form) {
+    return new Promise((resolve, reject) => {
+        request({
+            url: '/template',
+            method: 'post',
+            data: querystring.stringify(form)
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+}
+
+//模板解析
+export function apiTmplParse(form) {
     return new Promise((resolve, reject) => {
         request({
             url: '/template',

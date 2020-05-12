@@ -16,7 +16,7 @@ service.interceptors.response.use(
          * code为非20000是抛错 可结合自己业务进行修改
          */
         const res = response.data
-        if (res.code !== 200) {
+        if (res.status !== 'ok') {
             Message({
                 message: '服务器响应错误: ' + res.msg,
                 type: 'error',
