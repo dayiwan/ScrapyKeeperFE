@@ -1,7 +1,7 @@
 <template>
   <div class="allDataPicture">
     <div class="title">一周数据入库总量概览</div>
-    <div class="box" v-if="pictureData !== {}">
+    <div class="box" v-if="pictureData.rows.length > 0">
       <ve-line
         :data="pictureData"
         :settings="chartSettings"
@@ -16,7 +16,11 @@
 
 <script>
 export default {
-  props: ["pictureData"],
+  props: {
+    pictureData: { 
+      type: Object 
+    }
+  },
   data() {
     this.chartSettings = {
       yAxisName: ["数据入库量/条"],

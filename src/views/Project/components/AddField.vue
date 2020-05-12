@@ -1,18 +1,46 @@
 <template>
   <div class="add-field">
     <el-dialog :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
-      <div class="title">添加参数</div>
-      <div class="content">
-        <div class="content-title">已有参数</div>
-        <div class="old-field" ref="msg">
-          <p v-for="log_line in logList" :key="log_line">{{log_line}}</p>
-        </div>
-      </div>
+      <!-- <div class="add-field-section" v-for="(item, k) in fieldToAdd" :key="k">
+        <div class="add-field-row">
+          <div class="content">
+            <div class="content-title">{{ item.tip }}</div>
+          </div>
 
-      <div class="content">
-        <div class="content-title">添加参数</div>
-        <el-input v-model="newField"></el-input>
-        <el-button type="primary" plain @click="add">添加</el-button>
+          <div class="content">
+            <div class="content-title">已有参数</div>
+            <div class="old-field" ref="msg">
+              <p>{{item.value}}</p>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="content-title">添加参数</div>
+            <el-input @input="val => item.recentVal = val"></el-input>
+            <el-button type="primary" plain @click="add(k)">添加</el-button>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="add-field-section" v-for="(item, i) in fieldToAdd" :key="i">
+        <div class="add-field-row">
+          <div class="content">
+            <div class="content-title">{{ item.tip }}</div>
+          </div>
+
+          <div class="content">
+            <div class="content-title">已有参数</div>
+            <div class="old-field" ref="msg">
+              <p>{{item.value}}</p>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="content-title">添加参数</div>
+            <el-input v-model="item.recentVal"></el-input>
+            <el-button type="primary" plain @click="add(i)">添加</el-button>
+          </div>
+        </div>
       </div>
 
       <div slot="footer" class="dialog-footer">
@@ -24,29 +52,43 @@
 </template>
 
 <script>
+import deepcopy from "deepcopy";
 export default {
   data() {
     return {
       newField: "",
-      logList: []
+      logList: [],
+      tplInput: {},
+      fieldToAdd: [],
+      recentVal: ""
     };
   },
-  props: ["visible"],
+  props: ["visible", "tpl_input"],
+  watch: {
+    tpl_input: function(newVal) {
+      if (newVal != null) {
+        const tplInput = JSON.parse(newVal);
+        for (const key in tplInput) {
+          if (tplInput[key].type == 1) {
+            let tmp = {}
+            tmp = deepcopy(tplInput[key]);
+            tmp.recentVal = null;
+            tmp.key = key
+            tmp.value = tplInput[key].value.split(',')
+            this.fieldToAdd.push(tmp)
+          }
+        }
+        this.tplInput = tplInput;
+      }
+    }
+  },
   methods: {
     // 添加
-    add() {
-      if (this.logList.indexOf(this.newField) > -1) {
-        this.$message.error("该参数已存在，请重新输入!");
+    add(i) {
+      if (this.fieldToAdd[i].value.indexOf(this.fieldToAdd[i].recentVal) == -1) {
+        this.fieldToAdd[i].value.push(this.fieldToAdd[i].recentVal);
       } else {
-        this.logList.push(this.newField);
-        this.newField = "";
-        let _self = this;
-        setTimeout(function() {
-          _self.$refs.msg.scrollTo({
-            top: _self.$refs.msg.scrollHeight,
-            behavior: "smooth"
-          });
-        }, 30);
+        this.$message.info('已经添加过该参数')
       }
     },
     // 退出

@@ -80,7 +80,10 @@ export default {
       timeline: [],
       xAxislLabel: [],
       flag: false,
-      pictureData: {}
+      pictureData: {
+        rows: [],
+        columns: []
+      }
     };
   },
   mounted() {
@@ -96,9 +99,11 @@ export default {
         this.pictureData.rows = res;
         this.pictureData.columns = ["日期", "入库量"];
       } else {
-        this.pictureData = {}
+        this.pictureData = {
+          rows: [],
+          columns: []
+        }
       }
-      console.log(this.pictureData, 'eeeee')
     },
     async getStatus() {
       const res = await apiGetStatus();

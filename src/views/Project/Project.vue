@@ -22,7 +22,7 @@
       </el-table-column>
       <el-table-column align="center" width="200" label="操作">
         <template slot-scope="scope">
-          <el-button v-show="scope.row.category !== 'news'" type="text" @click="addFieldClick(scope.row)">添加参数</el-button>
+          <el-button v-show="scope.row.category !== 'news'" type="text" @click="addFieldClick(scope.row.tpl_input)">添加参数</el-button>
           <el-dropdown placement="bottom" trigger="click">
             <span class="el-dropdown-link">调度</span>
             <el-dropdown-menu slot="dropdown">
@@ -74,7 +74,7 @@
     <!-- 数据详情对话框 -->
     <DataDetail :visible="Detail.detail" :header="Detail.header" :content="Detail.content" @dataDetailCancle="dataDetailCancle"/>
     <!-- 添加参数对话框 -->
-    <AddField :visible="addField" @addFieldCancle="addFieldCancle" />
+    <AddField :visible="addField" :tpl_input="tpl_input" @addFieldCancle="addFieldCancle" />
     <!-- 编辑工程对话框 -->
     <EditBaseInfo :visible="editDialog" :form="editForm" @cancle="cancle" @editInfo="editInfoSubmit" />
     <!-- 添加工程对话框 -->
@@ -159,7 +159,8 @@ export default {
         content: [],
         detail: false
       },
-      journalName: ''
+      journalName: '',
+      tpl_input: null
     };
   },
   created() {
@@ -198,7 +199,8 @@ export default {
       this.addField = false;
     },
     // 添加参数弹框
-    addFieldClick(id) {
+    addFieldClick(tpl_input) {
+      this.tpl_input = tpl_input
       this.addField = true;
     },
     //查看日志详情
@@ -237,10 +239,6 @@ export default {
         this.Detail.content = [];
       }
       this.Detail.detail = true
-      console.log(this.Detail, '数据详情')
-      // this.logList = res;
-      // console.log(this.logList, '数据详情')
-      // this.dialog = true;
     },
     // 查看待采队列
     async spareUrl(form) {
