@@ -1,26 +1,24 @@
 <template>
   <div class="allDataPicture">
     <div class="title">一周数据入库总量概览</div>
-    <div class="box">
+    <div class="box" v-if="pictureData !== {}">
       <ve-line
-        :data="chartData"
+        :data="pictureData"
         :settings="chartSettings"
         :width="lineWidth"
         :height="lineHeight"
         :legend-visible="false"
-        :tooltip-visible="false"
       ></ve-line>
     </div>
+    <div class="no-picture" v-else>暂无数据</div>
   </div>
 </template>
 
 <script>
 export default {
+  props: ["pictureData"],
   data() {
     this.chartSettings = {
-      stack: {
-        用户: ["数据入库量"]
-      },
       yAxisName: ["数据入库量/条"],
       xAxisName: ["日期"],
       area: true, //是否显示为面积图
@@ -48,41 +46,7 @@ export default {
     };
     return {
       lineWidth: "95%", //宽度
-      lineHeight: "600px", //高度
-      chartData: {
-        //数据
-        columns: ["日期", "入库量"],
-        rows: [
-          {
-            日期: "1",
-            入库量: 1000
-          },
-          {
-            日期: "2",
-            入库量: 2007
-          },
-          {
-            日期: "3",
-            入库量: 3800
-          },
-          {
-            日期: "4",
-            入库量: 5200
-          },
-          {
-            日期: "5",
-            入库量: 6400
-          },
-          {
-            日期: "6",
-            入库量: 9300
-          },
-          {
-            日期: "7",
-            入库量: 11100
-          }
-        ]
-      }
+      lineHeight: "600px" //高度
     };
   }
 };
@@ -91,13 +55,21 @@ export default {
 <style lang="scss" scoped>
 .allDataPicture {
   .title {
-      font-weight: bold;
-      color: #333;
-      font-size: 17px;
-      margin-left: 5px;
+    font-weight: bold;
+    color: #333;
+    font-size: 17px;
+    margin-left: 5px;
   }
   .box {
     padding-left: 7.5%;
+  }
+  .no-picture {
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    line-height: 55px;
+    border: 1px solid #ebeef5;
+    margin: 10px 0;
   }
 }
 </style>

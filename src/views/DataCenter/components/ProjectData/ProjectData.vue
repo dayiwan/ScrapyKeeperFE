@@ -2,7 +2,7 @@
     <div class="projectDataContainer">
         <chart-panel id="projectData"></chart-panel>
     </div>
-</template>>
+</template>
 <script>
 import ChartPanel from '@/components/ChartPanel'
 import draw from './draw.js'

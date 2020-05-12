@@ -6,30 +6,24 @@
       :show-close="false"
       :close-on-click-modal="false"
     >
-      <el-form :model="editeForm" label-width="100px" label-position="right">
-        <el-form-item label="项目名称" prop="project_alias">
-          <el-input v-model="editeForm.project_alias" auto-complete="off" style="width: 320px;"></el-input>
+      <el-form :model="form" label-width="100px" label-position="top">
+        <el-form-item label="项目名称">
+          <el-input v-model="form.project_name_zh" auto-complete="off" style="width: 320px;"></el-input>
         </el-form-item>
 
-        <el-form-item label="分类" prop="category">
-          <el-select v-model="editeForm.category" placeholder="请选择" @change="change">
+        <el-form-item label="模板名称">
+          <el-select v-model="form.template" placeholder="请选择" @change="change">
             <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in tplList"
+              :key="item.tpl_name"
+              :label="item.tpl_zh"
+              :value="item.tpl_name"
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="候选模板" prop="startUrls">
-          <el-transfer
-            filterable
-            :titles="['候选模板', '已选模板']"
-            :filter-method="filterMethod"
-            filter-placeholder="请输关键字"
-            v-model="value"
-            :data="data"
-          ></el-transfer>
+
+        <el-form-item v-for="(item, _key) in form.tpl_input" :key=_key :label="item.tip">
+          <el-input v-model="item.value" :placeholder="item.tip"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -41,51 +35,42 @@
 </template>
 
 <script>
-import { apiStartUrl } from "@/api/starturl";
+import { setField, getField } from "@/utils/cookies"
 export default {
-  props: ["visible", "form"],
-  data() {
-    return {
-      options: [
-        {
-          value: "news",
-          label: "网页官网"
-        },
-        {
-          value: "weibo",
-          label: "微博"
-        },
-        {
-          value: "gongzhonghao",
-          label: "公众号"
-        }
-      ],
-      value: [],
-      data: [],
-      startUrls: []
-    };
-  },
-  computed: {
-    editeForm: function() {
-      return this.form;
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    },
+    tplList: {
+      type: Array  // 模板列表 
     }
   },
-  created() {
-    this.getdata();
+  // props: ["visible", "tplList"],
+  data() {
+    return {
+      form: {
+        project_name_zh: '',
+        template:'',
+        tpl_input: {},
+      }
+    };
   },
   methods: {
     change() {
-      this.getdata();
-    },
-    async getdata() {
-      this.data = [];
-      const res = await apiStartUrl({ name: this.editeForm.category });
-      if (res.length > 0) {
-        for (var i in res) {
-          this.data.push({
-            key: res[i].crawl_url,
-            label: res[i].crawl_name
-          });
+      for (let item of this.tplList) {
+        if (item.tpl_name === this.form.template ) {
+          this.form.tpl_input = JSON.parse(item.tpl_input)
+          let recentInput = getField(item.tpl_name)
+          if (recentInput) {
+            recentInput =  JSON.parse(recentInput)
+            // 这里不用Object.assgin 是因为cookies里面的key可能是过期的,要优先保证form.tplInput的key
+            for (const key in this.form.tpl_input) {
+              if (recentInput[key]) {
+                this.form.tpl_input[key] = recentInput[key]
+              } 
+            }
+          }
         }
       }
     },
@@ -93,7 +78,8 @@ export default {
       return item;
     },
     submit() {
-      this.$emit("addProjectSubmit", this.editeForm);
+      setField(this.form.template, this.form.tpl_input)
+      this.$emit("addProjectSubmit", this.form);
     },
     cancle() {
       this.$emit("addProjectCancle");

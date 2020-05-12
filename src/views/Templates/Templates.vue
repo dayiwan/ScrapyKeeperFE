@@ -1,7 +1,12 @@
 <template>
   <div class="app-container">
     <div class="tpl-list">
-      <TemplateCard v-for="(tpl, index) in tplArr" :name="tpl.tpl_zh" :key="index" :imgSrc="`data:image/png;base64,${tpl.tpl_img}`" />
+      <TemplateCard
+        v-for="(tpl, index) in tplArr"
+        :name="tpl.tpl_zh"
+        :key="index"
+        :imgSrc="`data:image/png;base64,${tpl.tpl_img}`"
+      />
       <div class="template-card add-template" @click="addProjDialogShow = true">+</div>
     </div>
 
@@ -22,24 +27,9 @@
 </template>
 
 <script>
-import {
-  getAllProject,
-  apiEditProjectInfo,
-  delProject,
-  apiAddProject
-} from "@/api/project";
-import {
-  apiAddModel,
-  apiGetModel,
-  delModel,
-  apiEditModel
-} from "@/api/templates";
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
+import { getAllProject, apiEditProjectInfo, delProject, apiAddProject } from "@/api/project";
+import { apiAddTmpl, apiGetTmpl, delTmpl, apiEditTmpl } from "@/api/templates";
+import { apidRunImmediately, apidCancleRunning, apiAddScheduler, apiCancelScheduler } from "@/api/scheduler";
 import { apiOriginalLog } from "@/api/originalLog";
 import EditBaseInfo from "./components/EditBaseInfo";
 import AddProjectDialog from "./components/AddProjectDialog";
@@ -60,7 +50,6 @@ export default {
       ]),
       tplArr: [],
       list: null,
-      listLoading: true,
       editDialog: false,
       editForm: {
         id: null,
@@ -74,7 +63,7 @@ export default {
     };
   },
   created() {
-    this.getModelList();
+    this.listTmpl();
   },
   methods: {
     // 点击编辑响应事件
@@ -91,61 +80,64 @@ export default {
     async editInfoSubmit(form) {
       var params = form;
       params.name_zh = this.modelMap.get(params.name);
-      await apiEditModel(params);
+      await apiEditTmpl(params);
       this.editDialog = false;
       this.$message.success("编辑成功！");
-      this.getModelList();
+      this.listTmpl();
     },
     // 取消编辑事件
     cancle() {
       this.editDialog = false;
     },
     // 获取模板列表
-    async getModelList() {
-      this.listLoading = true;
-      const res = await apiGetModel();
-      this.listLoading = false;
-      this.tplArr = res.data;
+    async listTmpl() {
+      const loading = this.$loading({
+        lock: true,
+        text: "Loading",
+        spinner: "el-icon-loading",
+        background: "rgba(255, 255, 255, 0.9)"
+      });
+      const data = await apiGetTmpl();
+      this.tplArr = data;
+      loading.close()
     },
     // 删除
     async del_project(id) {
-      await delModel(id);
-      this.getModelList();
+      await delTmpl(id);
+      this.listTmpl();
       this.$message.success("删除成功！");
-    },
-    // 点击添加模板按钮
-    addModel(add) {
-      this.addProjectDialog = add;
     },
     // 提交添加模板
     async addProjectSubmit(form) {
-      this.addProjectDialog = false;
+      let _self = this;
+      const loading = _self.$loading({
+        lock: true,
+        text: "正在添加, 请耐心等候！",
+        spinner: "el-icon-loading"
+      });
+      
       const formData = new FormData();
       for (let key in form) {
         if (form[key] instanceof File) {
-          formData.append(key, '');
+          formData.append(key, "");
           formData.set(key, form[key]);
         } else {
           formData.append(key, form[key]);
         }
       }
-      upload.post('/template', formData).then(res => {
-        console.log(res)
-      }).catch(e => {
-        console.log(e)
-      })
-      // const loading = this.$loading({
-      //   lock: true,
-      //   text: "正在添加, 请耐心等候！",
-      //   spinner: "el-icon-loading"
-      // });
-      // const res = await apiAddModel(form);
+      upload
+        .post("/template", formData)
+        .then(res => {
+          _self.$message.success("添加成功！");
+          _self.listTmpl();
+        })
+        .catch(e => {
+          console.error(e);
+          _self.$message.console.error('添加失败');
+        });
+        loading.close()
+        _self.addProjDialogShow = false;
 
-      // if (res) {
-      //   this.$message.success("添加成功！");
-      // }
-      // loading.close();
-      // this.getModelList();
     },
     // 取消添加模板
     addProjectCancle() {
