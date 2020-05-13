@@ -36,14 +36,12 @@ export function apiAddmachine(machine) {
 }
 
 // 删除服务器
-export function apiDelMachine(url) {
+export function apiDelMachine(id) {
     return new Promise((resolve, reject) => {
         request({
             url: 'server_machine',
-            method: 'detele',
-            params: {
-                url
-            }
+            method: 'delete',
+            params: {id}
         }).then((res) => {
             resolve(res)
         }).catch((e) => {

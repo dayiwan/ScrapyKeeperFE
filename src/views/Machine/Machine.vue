@@ -35,7 +35,7 @@
             size="mini"
             @click="editmachineForm=JSON.parse(JSON.stringify(scope.row)); editmachineFormSubmit=JSON.parse(JSON.stringify(scope.row)); dialogVisible = true;"
           >编辑</el-button>
-          <el-button size="mini" @click="delMachine(scope.row.url)">删除</el-button>
+          <el-button size="mini" @click="delMachine(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -158,16 +158,9 @@ export default {
       this.listLoading = true;
       try {
         const res = await apiListMachine();
+        this.list = []
         for (const machRes of res) {
-          let exist = false;
-          for (const mach of this.list) {
-            if (machRes.url == mach.url) {
-              exist = true
-            }
-          }
-          if (!exist) {
-            this.list.push(machRes)
-          }
+          this.list.push(machRes)
         }
       } catch (e) {
         this.$message.error("服务器列表获取错误 " + e);
@@ -199,28 +192,24 @@ export default {
         await apiEditMachine(this.editmachineForm);
         this.listMachine();
       } catch (e) {
-        console.log();
+        console.log()
       }
       this.listLoading = false;
       this.dialogVisible = false;
     },
 
     // 删除服务器
-    async delMachine(url) {
+    delMachine: function(id) {
       this.listLoading = false;
-      const res = await this.$confirm(
-        "此操作将永久删除该选项, 是否继续?",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }
-      )
-      if (res === "confirm") {
-        await apiDelMachine(url);
+      this.$confirm("是否删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then( async () => {
+        await apiDelMachine(id);
+        this.$message.success('删除成功')
         this.listMachine();
-      } 
+      })
     }
   }
 };

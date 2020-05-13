@@ -2,7 +2,7 @@
   <div class="data-detail">
     <el-dialog :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
       <div class="title">数据详情</div>
-      <div class="table" v-if="content !== []">
+      <div class="table" v-if="content.length > 0">
           <el-table :data="content" max-height="500px" border>
               <el-table-column v-for="( item, index ) in header" :key="index" align="center" :label="item" show-overflow-tooltip>
                   <!-- <template>{{ index }}</template> -->
@@ -20,7 +20,17 @@
 
 <script>
 export default {
-    props: ['header', 'content', 'visible'],
+    props:{
+        header: {
+            type: Array
+        },
+        content: {
+            type: Array
+        },
+        visible: {
+            type:Boolean
+        }
+    },
     methods: {
         cancle() {
             this.$emit("dataDetailCancle");

@@ -48,9 +48,12 @@ export default {
   display: flex;
   justify-content: space-between;
   padding: 30px 20px 0px 50px;
-  .cpu, .RAM, .project-running, .project-running-status{
+  .cpu, .RAM, .project-running-status{
     width: 20%;
     height: 350px;
+  }
+  .RAM {
+      margin-left: 10%;
   }
 
 }
