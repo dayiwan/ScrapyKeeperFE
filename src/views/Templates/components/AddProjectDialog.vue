@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import upload from "@/utils/upload";
+import { apiParseTmpl } from "@/api/templates";
 export default {
   props: ["visible"],
   data() {
@@ -118,25 +118,14 @@ export default {
     cancle() {
       this.$emit("addProjectCancle");
     },
-    fileChange(file, fileList) {
+    async fileChange(file, fileList) {
       this.form.tpl_zip = file.raw;
-      const formData = new FormData();
-      let _self = this;
-      formData.append("tpl_zip", null);
-      formData.set("tpl_zip", file.raw);
-      upload
-        .post("/template_parser", formData)
-        .then(data => {
-          _self.form.tpl_name = data.name;
-          _self.form.tpl_zh = data.name_zh;
-          _self.form.tpl_type = data.type;
-          _self.tplInput = data.tpl_input;
-          _self.form.tpl_input = JSON.stringify(data.tpl_input);
-        })
-        .catch(e => {
-          console.error(e);
-          _self.$message.console.error("添加失败");
-        });
+      const data = await apiParseTmpl(file.raw);
+      this.form.tpl_name = data.name;
+      this.form.tpl_zh = data.name_zh;
+      this.form.tpl_type = data.type;
+      this.tplInput = data.tpl_input;
+      this.form.tpl_input = JSON.stringify(data.tpl_input);
     },
     imgChange(file) {
       this.form.tpl_img = file.raw;
