@@ -1,40 +1,29 @@
 <template>
   <div class="add-field">
     <el-dialog :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
-      <!-- <div class="add-field-section" v-for="(item, k) in fieldToAdd" :key="k">
-        <div class="add-field-row">
-          <div class="content">
-            <div class="content-title">{{ item.tip }}</div>
-          </div>
-
-          <div class="content">
-            <div class="content-title">已有参数</div>
-            <div class="old-field" ref="msg">
-              <p>{{item.value}}</p>
-            </div>
-          </div>
-
-          <div class="content">
-            <div class="content-title">添加参数</div>
-            <el-input @input="val => item.recentVal = val"></el-input>
-            <el-button type="primary" plain @click="add(k)">添加</el-button>
-          </div>
-        </div>
-      </div>-->
       <div class="title">添加参数</div>
       <div class="no-field" v-if="fieldToAdd.length == 0">暂无可添加的参数</div>
       <div class="add-field-section" v-for="(item, i) in fieldToAdd" :key="i">
-          <div class="content">
-            <div class="content-title">{{ item.tip }}</div>
-            <div class="old-field" ref="msg">
-              <p>{{item.value | ellipsis}}</p>
-            </div>
+        <div class="content">
+          <div class="content-title">{{ item.tip }}</div>
+          <div class="old-field" :ref="`oldField${i}`">
+            <p v-for="(param, param_i) in item.value" :key="param_i">
+              {{ param }}
+              <el-button
+                style="margin-left: 15px; color: #ff3d3d;"
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                @click="delParam(i, param_i)"
+              ></el-button>
+            </p>
           </div>
-          <div class="content">
-            <div class="content-title">添加参数</div>
-            <el-input v-model="item.recentVal"></el-input>
-            <el-button type="primary" plain @click="add(i)">添加</el-button>
-          </div>
+        </div>
+        <div class="content">
+          <div class="content-title">添加参数</div>
+          <el-input v-model="item.recentVal"></el-input>
+          <el-button type="primary" plain @click="add(i)">添加</el-button>
+        </div>
       </div>
 
       <div slot="footer" class="dialog-footer">
@@ -58,11 +47,11 @@ export default {
   },
   filters: {
     ellipsis: function(value) {
-      var fieldStr = ''
+      var fieldStr = "";
       for (let item of value) {
-        fieldStr += item + ', '
+        fieldStr += item + ", ";
       }
-      return fieldStr
+      return fieldStr;
     }
   },
   props: {
@@ -82,7 +71,6 @@ export default {
             tmp.value = tplInput[key].value.split(",");
             this.fieldToAdd.push(tmp);
           }
-         
         }
       }
     }
@@ -94,15 +82,25 @@ export default {
         this.fieldToAdd[i].value.indexOf(this.fieldToAdd[i].recentVal) == -1
       ) {
         this.fieldToAdd[i].value.push(this.fieldToAdd[i].recentVal);
-        this.fieldToAdd[i].recentVal = '';
+        this.fieldToAdd[i].recentVal = "";
+        let _self = this;
+        setTimeout(function() {
+          const oldField = _self.$refs['oldField' + i][0]
+          oldField.scrollTo({
+            top: oldField.scrollHeight,
+            behavior: "smooth"
+          });
+        }, 60);
       } else {
         this.$message.info("该参数已存在");
       }
     },
+    delParam(i, param_i) {
+      this.fieldToAdd[i].value.splice(param_i, 1);
+    },
     // 确认添加
     submit() {
-      this.fieldToAdd = []
-      this.$emit("addFieldSubmit", this.fieldToAdd)
+      this.$emit("addFieldSubmit", this.fieldToAdd);
     },
     // 退出
     cancle() {
@@ -132,12 +130,14 @@ export default {
   }
   .old-field {
     width: 100%;
+    max-height: 200px;
+    overflow: auto;
     border: 1px solid #ebeef5;
     p {
-      padding: 0 5px 0 5px;
+      padding-left: 5px;
+      margin: 0;
       word-wrap: break-word;
       word-break: break-all;
-      overflow: hidden;
     }
   }
 }

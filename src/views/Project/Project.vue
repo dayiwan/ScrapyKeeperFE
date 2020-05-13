@@ -257,24 +257,23 @@ export default {
       this.listProject();
     },
     // 确认添加参数
-    async addFieldSubmit(field) {
-      for (let item of field) {
-        this.fieldToAdd[item.key] = {};
-        this.fieldToAdd[item.key]["tip"] = item.tip;
-        this.fieldToAdd[item.key]["type"] = item.type;
-        this.fieldToAdd[item.key]["value"] = item.value.join();
+    async addFieldSubmit(fields) {
+      let fieldAdded = {}
+      let tpl_input = JSON.parse(this.tpl_input)
+      for (let field of fields) {
+        tpl_input[field.key] = {
+          tip: field.tip,
+          type: field.type,
+          value: field.value.join(',')
+        }
       }
-      let tpl_input_obj = JSON.parse(this.tpl_input);
-      for (var key in this.fieldToAdd) {
-        tpl_input_obj[key] = this.fieldToAdd[key];
-      }
+     
       var params = {
         id: this.fieldToAddId,
-        tpl_input: JSON.stringify(tpl_input_obj)
+        tpl_input: JSON.stringify(tpl_input)
       };
       await apiEditProjectInfo(params);
       this.$message.success("添加成功!");
-      this.tpl_input = null;
       this.addField = false;
       this.listProject();
     },
@@ -283,18 +282,20 @@ export default {
       this.addField = false;
     },
     // 添加参数弹框
-    addFieldClick(form) {
-      this.fieldToAddId = form.id;
-      this.tpl_input = form.tpl_input;
+    addFieldClick(project) {
+      this.fieldToAddId = project.id;
+      this.tpl_input = project.tpl_input;
       this.addField = true;
     },
     //查看日志详情
     async ViewLogClick(form) {
+      this.listLoading = true
       this.dialog = true;
       this.title = "日志详情";
       this.journalName = form.project_name;
       const res = await apiOriginalLog(form.id);
       this.logList = res;
+      this.listLoading = false
     },
     //退出日志详情 || 待采队列对话框
     logViewCancle() {
@@ -309,6 +310,7 @@ export default {
     //查看数据详情
     async dataDetail(form) {
       this.title = "数据详情";
+      this.listLoading = true
       var params = {
         project_name: form.project_name,
         tpl_input: form.tpl_input
@@ -324,10 +326,12 @@ export default {
         this.Detail.content = [];
       }
       this.Detail.detail = true;
+      this.listLoading = false
     },
     // 查看待采队列
     async spareUrl(form) {
       this.title = "待采队列";
+      this.listLoading = true
       var params = {
         project_name: form.project_name,
         tpl_input: form.tpl_input
@@ -335,6 +339,7 @@ export default {
       const res = await apiGetSpareUrl(params);
       this.logList = res;
       this.dialog = true;
+      this.listLoading = false
     },
     //退出数据趋势对话框
     dataTrendCancle() {
@@ -342,6 +347,7 @@ export default {
     },
     //查看数据趋势图
     async dataTrendClick(project_name_zh) {
+      this.listLoading = true
       var params = {
         project_name_zh: project_name_zh
       };
@@ -356,6 +362,7 @@ export default {
         };
       }
       this.dataTrendShow = true;
+      this.listLoading = false
     },
     //根据分类进行筛选
     Cate(value) {
@@ -506,18 +513,6 @@ export default {
       this.$message.success("取消成功！");
       this.listProject();
     }
-    // 获取模板列表,将模板列表传入筛选组件和categoryMap,
-    // async listTemplate() {
-    //   const data = await apiGetTmpl();
-    //   this.tplList = data;
-    //   for (let item of this.tplList) {
-    //     var item_obj = {};
-    //     this.categoryMap[item.tpl_name] = item.tpl_zh;
-    //     item_obj["key"] = item.tpl_zh;
-    //     item_obj["value"] = item.tpl_name;
-    //     this.toolOptions.push(item_obj);
-    //   }
-    // }
   }
 };
 </script>

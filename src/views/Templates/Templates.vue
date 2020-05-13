@@ -5,7 +5,7 @@
         v-for="(tpl, index) in tplArr"
         :name="tpl.tpl_zh"
         :key="index"
-        :imgSrc="`data:image/png;base64,${tpl.tpl_img}`"
+        :imgSrc="`data:image/jpg;base64,${tpl.tpl_img}`"
       />
       <div class="template-card add-template" @click="addProjDialogShow = true">+</div>
     </div>
@@ -122,15 +122,16 @@ export default {
         text: "正在添加, 请耐心等候！",
         spinner: "el-icon-loading"
       });
-      const res = await apiAddTmpl(form);
-      if (res) {
-        this.$message.success("添加成功！");
+      try {
+        const res = await apiAddTmpl(form);
         this.listTmpl();
-      } else {
-        this.$message.error("添加失败！");
+         this.$message.success("添加成功！");
+      } catch (e) {
+        console.error(e)
+      } finally {
+        loading.close();
+        this.addProjDialogShow = false;
       }
-      loading.close();
-      this.addProjDialogShow = false;
     },
     // 取消添加模板
     addProjectCancle() {

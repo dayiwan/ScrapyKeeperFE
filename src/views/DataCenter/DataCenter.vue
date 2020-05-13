@@ -76,7 +76,7 @@ export default {
           ]
         }
       ],
-      weekData: {},
+      weekData: [],
       timeline: [],
       xAxislLabel: [],
       flag: false,
@@ -87,11 +87,19 @@ export default {
     };
   },
   mounted() {
-    this.getStatus();
-    this.getProjectWeekData();
-    this.getDataTrend();
+    this.init()
   },
   methods: {
+    async init() {
+      const loading = this.$loading({
+        lock: true,
+        spinner: "el-icon-loading"
+      });
+      await this.getStatus();
+      await this.getProjectWeekData();
+      await this.getDataTrend();
+      loading.close();
+    },
     // 获取七天内数据总入库量趋势
     async getDataTrend() {
       const res = await getDataTrend({});
@@ -102,7 +110,7 @@ export default {
         this.pictureData = {
           rows: [],
           columns: []
-        }
+        };
       }
     },
     async getStatus() {
@@ -127,8 +135,8 @@ export default {
         res.project_error_rate_status.normal
       );
       this.num = res.dataCount;
-      this.fileSize = res.file_size
-      this.totalSize = res.data_size
+      this.fileSize = res.file_size;
+      this.totalSize = res.data_size;
     },
     async getProjectWeekData() {
       var res = await apiGetProjectWeekData();
