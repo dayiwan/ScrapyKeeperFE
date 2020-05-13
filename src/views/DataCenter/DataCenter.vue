@@ -36,8 +36,8 @@ export default {
   data() {
     return {
       num: 0,
-      totalSize: 45511,
-      fileSize: 31552,
+      totalSize: 0,
+      fileSize: 0,
       pieChartList: [
         {
           domId: "cpu-chart",
@@ -127,6 +127,8 @@ export default {
         res.project_error_rate_status.normal
       );
       this.num = res.dataCount;
+      this.fileSize = res.file_size
+      this.totalSize = res.data_size
     },
     async getProjectWeekData() {
       var res = await apiGetProjectWeekData();

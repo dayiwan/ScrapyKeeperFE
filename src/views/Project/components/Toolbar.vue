@@ -3,10 +3,11 @@
     <div class="select">
       <span>分类:</span>
       <el-select v-model="cate" size="mini" placeholder="请选择" @change="Cate">
-        <el-option label="全部" value=""></el-option>
+        <el-option v-for="(item, index) in options" :key="index" :label="item.key" :value="item.value"></el-option>
+        <!-- <el-option label="全部" value=""></el-option>
         <el-option label="通用型新闻网页" value="news"></el-option>
         <el-option label="新浪微博" value="weibo"></el-option>
-        <el-option label="微信公众号" value="gongzhonghao"></el-option>
+        <el-option label="微信公众号" value="gongzhonghao"></el-option> -->
       </el-select>
     </div>
     <div class="select">
@@ -30,6 +31,11 @@
 
 <script>
 export default {
+  props: {
+    options: {
+      type: Array
+    }
+  },
     data() {
         return {
             cate: '',
@@ -40,16 +46,16 @@ export default {
     },
     methods: {
         Cate(value) {
-            this.$emit("Cate", value)
+          this.$emit("Cate", value)
         },
         State(value) {
-            this.$emit("State", value)
+          this.$emit("State", value)
         },
         Search() {
-            this.$emit("Search", this.name)
+          this.$emit("Search", this.name)
         },
         addProject() {
-            this.$emit("addProject", this.add)
+          this.$emit("addProject", this.add)
         }
 
     }

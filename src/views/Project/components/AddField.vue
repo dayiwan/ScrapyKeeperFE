@@ -22,11 +22,12 @@
         </div>
       </div>-->
       <div class="title">添加参数</div>
+      <div class="no-field" v-if="fieldToAdd.length == 0">暂无可添加的参数</div>
       <div class="add-field-section" v-for="(item, i) in fieldToAdd" :key="i">
           <div class="content">
             <div class="content-title">{{ item.tip }}</div>
             <div class="old-field" ref="msg">
-              <p>{{item.value}}</p>
+              <p>{{item.value | ellipsis}}</p>
             </div>
           </div>
           <div class="content">
@@ -37,7 +38,7 @@
       </div>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="submit">确认添加</el-button>
+        <el-button size="small" v-show="fieldToAdd.length > 0" type="primary" @click="submit">确认添加</el-button>
         <el-button size="small" @click="cancle">取 消</el-button>
       </div>
     </el-dialog>
@@ -55,7 +56,19 @@ export default {
       recentVal: ""
     };
   },
-  props: ["visible", "tpl_input"],
+  filters: {
+    ellipsis: function(value) {
+      var fieldStr = ''
+      for (let item of value) {
+        fieldStr += item + ', '
+      }
+      return fieldStr
+    }
+  },
+  props: {
+    visible: { type: Boolean },
+    tpl_input: { type: String }
+  },
   watch: {
     tpl_input: function(newVal) {
       if (newVal != null) {
@@ -69,6 +82,7 @@ export default {
             tmp.value = tplInput[key].value.split(",");
             this.fieldToAdd.push(tmp);
           }
+         
         }
       }
     }
@@ -87,6 +101,7 @@ export default {
     },
     // 确认添加
     submit() {
+      this.fieldToAdd = []
       this.$emit("addFieldSubmit", this.fieldToAdd)
     },
     // 退出

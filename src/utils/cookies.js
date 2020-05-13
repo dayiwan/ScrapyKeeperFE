@@ -7,6 +7,5 @@ export function setField(key, value) {
 
 //读取用户存储的参数
 export function getField(key) {
-    console.log(Cookies.get(key))
     return Cookies.get(key) ? Cookies.get(key) : null;
 }
