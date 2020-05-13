@@ -46,8 +46,6 @@ import AddProjectDialog from "./components/AddProjectDialog";
 import Toolbar from "./components/Toolbar";
 import TemplateCard from "./components/TemplateCard";
 
-import upload from "@/utils/upload";
-
 export default {
   name: "templates",
   components: { EditBaseInfo, AddProjectDialog, TemplateCard },
@@ -119,36 +117,20 @@ export default {
     },
     // 提交添加模板
     async addProjectSubmit(form) {
-      let _self = this;
-      const loading = _self.$loading({
+      const loading = this.$loading({
         lock: true,
         text: "正在添加, 请耐心等候！",
         spinner: "el-icon-loading"
       });
-
-      const formData = new FormData();
-      for (let key in form) {
-        if (form[key] instanceof File) {
-          formData.append(key, "");
-          formData.set(key, form[key]);
-        } else {
-          formData.append(key, form[key]);
-        }
+      const res = await apiAddTmpl(form);
+      if (res) {
+        this.$message.success("添加成功！");
+        this.listTmpl();
+      } else {
+        this.$message.error("添加失败！");
       }
-      upload
-        .post("/template", formData)
-        .then(res => {
-          _self.$message.success("添加成功！");
-          _self.listTmpl();
-        })
-        .catch(e => {
-          console.error(e);
-          _self.$message.console.error("添加失败");
-        })
-        .finally(() => {
-          loading.close();
-          _self.addProjDialogShow = false;
-        });
+      loading.close();
+      this.addProjDialogShow = false;
     },
     // 取消添加模板
     addProjectCancle() {
