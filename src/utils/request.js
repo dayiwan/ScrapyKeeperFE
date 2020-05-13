@@ -3,7 +3,7 @@ import { Message } from 'element-ui'
 
 // 创建axios实例
 const service = axios.create({
-    baseURL: 'http://localhost:5060',
+    baseURL: 'http://172.16.13.22:5060',
     timeout: 95000, // 请求超时时间
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
     withCredentials: true // 跨域session

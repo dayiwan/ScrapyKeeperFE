@@ -3,8 +3,9 @@
     <el-dialog :visible.sync="visible" :show-close="false" :close-on-click-modal="false">
       <div class="title">数据详情</div>
       <div class="table" v-if="content !== []">
-          <el-table :data="content" style="width: 100%;" max-height="500px" border>
+          <el-table :data="content" max-height="500px" border>
               <el-table-column v-for="( item, index ) in header" :key="index" align="center" :label="item" show-overflow-tooltip>
+                  <!-- <template>{{ index }}</template> -->
                   <template slot-scope="scope">{{ scope.row[item] ? scope.row[item] : 'null'}}</template>
               </el-table-column>
           </el-table>
@@ -29,9 +30,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.data-detail {
-    width: 80%;
-}
 .title {
   text-align: center;
   margin-bottom: 20px;
@@ -39,9 +37,5 @@ export default {
   font-weight: bolder;
   font-size: 18px;
 }
-.table {
-    border: 1px solid #ebeef5;
-    overflow: auto;
-    width: 100%;
-}
+
 </style>

@@ -4,7 +4,7 @@ import store from '../store'
 
 // 创建axios实例
 const service = axios.create({
-    baseURL: 'http://localhost:5060', // api的base_url
+    baseURL: 'http://172.16.13.22:5060', // api的base_url
     timeout: 15000, // 请求超时时间
     headers: { 'Content-Type': 'multipart/form-data' }
 })

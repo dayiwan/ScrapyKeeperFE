@@ -74,7 +74,7 @@
     <!-- 数据详情对话框 -->
     <DataDetail :visible="Detail.detail" :header="Detail.header" :content="Detail.content" @dataDetailCancle="dataDetailCancle"/>
     <!-- 添加参数对话框 -->
-    <AddField :visible="addField" :tpl_input="tpl_input" @addFieldCancle="addFieldCancle" />
+    <AddField :visible="addField" :tpl_input="tpl_input" @addFieldCancle="addFieldCancle" @addFieldSubmit="addFieldSubmit" />
     <!-- 编辑工程对话框 -->
     <EditBaseInfo :visible="editDialog" :form="editForm" @cancle="cancle" @editInfo="editInfoSubmit" />
     <!-- 添加工程对话框 -->
@@ -160,7 +160,8 @@ export default {
         detail: false
       },
       journalName: '',
-      tpl_input: null
+      tpl_input: null,
+      fieldToAdd: {}
     };
   },
   created() {
@@ -193,6 +194,19 @@ export default {
       this.logViewCancle()
       this.$message.success("提交成功！")
       this.listProject()
+    },
+    // 确认添加参数
+    addFieldSubmit(field){
+      for (let item of field) {
+        console.log(item)
+        this.fieldToAdd[item.key] = {}
+        this.fieldToAdd[item.key]['tip'] = item.tip;
+        this.fieldToAdd[item.key]['type'] = item.type;
+        this.fieldToAdd[item.key]['value'] = item.value.join()
+      }
+      console.log(this.fieldToAdd, '添加参数');
+      console.log(field, '-----确认添加参数------');
+      this.addField = false;
     },
     // 关闭添加参数弹框
     addFieldCancle() {

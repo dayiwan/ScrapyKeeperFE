@@ -20,31 +20,24 @@
             <el-button type="primary" plain @click="add(k)">添加</el-button>
           </div>
         </div>
-      </div> -->
-
+      </div>-->
+      <div class="title">添加参数</div>
       <div class="add-field-section" v-for="(item, i) in fieldToAdd" :key="i">
-        <div class="add-field-row">
           <div class="content">
             <div class="content-title">{{ item.tip }}</div>
-          </div>
-
-          <div class="content">
-            <div class="content-title">已有参数</div>
             <div class="old-field" ref="msg">
               <p>{{item.value}}</p>
             </div>
           </div>
-
           <div class="content">
             <div class="content-title">添加参数</div>
             <el-input v-model="item.recentVal"></el-input>
             <el-button type="primary" plain @click="add(i)">添加</el-button>
           </div>
-        </div>
       </div>
 
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary">确认添加</el-button>
+        <el-button size="small" type="primary" @click="submit">确认添加</el-button>
         <el-button size="small" @click="cancle">取 消</el-button>
       </div>
     </el-dialog>
@@ -58,7 +51,6 @@ export default {
     return {
       newField: "",
       logList: [],
-      tplInput: {},
       fieldToAdd: [],
       recentVal: ""
     };
@@ -70,26 +62,32 @@ export default {
         const tplInput = JSON.parse(newVal);
         for (const key in tplInput) {
           if (tplInput[key].type == 1) {
-            let tmp = {}
+            let tmp = {};
             tmp = deepcopy(tplInput[key]);
             tmp.recentVal = null;
-            tmp.key = key
-            tmp.value = tplInput[key].value.split(',')
-            this.fieldToAdd.push(tmp)
+            tmp.key = key;
+            tmp.value = tplInput[key].value.split(",");
+            this.fieldToAdd.push(tmp);
           }
         }
-        this.tplInput = tplInput;
       }
     }
   },
   methods: {
     // 添加
     add(i) {
-      if (this.fieldToAdd[i].value.indexOf(this.fieldToAdd[i].recentVal) == -1) {
+      if (
+        this.fieldToAdd[i].value.indexOf(this.fieldToAdd[i].recentVal) == -1
+      ) {
         this.fieldToAdd[i].value.push(this.fieldToAdd[i].recentVal);
+        this.fieldToAdd[i].recentVal = '';
       } else {
-        this.$message.info('已经添加过该参数')
+        this.$message.info("该参数已存在");
       }
+    },
+    // 确认添加
+    submit() {
+      this.$emit("addFieldSubmit", this.fieldToAdd)
     },
     // 退出
     cancle() {
@@ -108,13 +106,10 @@ export default {
   font-size: 18px;
 }
 .content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 30px;
+  margin-top: 20px;
   &-title {
     font-weight: bold;
-    width: 80px;
+    margin-bottom: 10px;
   }
   .el-input {
     width: 300px;
@@ -122,8 +117,6 @@ export default {
   }
   .old-field {
     width: 100%;
-    height: 200px;
-    overflow-y: auto;
     border: 1px solid #ebeef5;
     p {
       padding: 0 5px 0 5px;
