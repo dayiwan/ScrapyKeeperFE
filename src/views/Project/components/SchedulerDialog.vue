@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import deepcopy from 'deepcopy'
   export default {
     props: [
       'visible', 'form'
@@ -58,9 +59,10 @@
     },
     methods: {
       submit() {
-        this.schedulerForm['project_id'] = this.form.id
-        this.schedulerForm['desc'] = this.desc
-        this.$emit('addScheduler', this.schedulerForm)
+        let schedulerForm = deepcopy(this.schedulerForm)
+        schedulerForm['project_id'] = this.form.id
+        schedulerForm['desc'] = this.desc
+        this.$emit('addScheduler', schedulerForm)
       },
       cancle() {
         this.$emit('schedulerClickCancle')

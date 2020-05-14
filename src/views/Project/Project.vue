@@ -162,6 +162,7 @@ import Toolbar from "./components/Toolbar";
 import DataTrend from "./components/DataTrend";
 import AddField from "./components/AddField";
 import DataDetail from "./components/DataDetail";
+import deepcopy from 'deepcopy';
 
 export default {
   name: "project",
@@ -489,7 +490,7 @@ export default {
     },
     // 点击周期调度按钮， 显示对话框
     schedulerClick(project) {
-      this.schedulerForm = project;
+      this.schedulerForm = deepcopy(project);
       this.schedulerDialog = true;
     },
     // 关闭周期调度对话框

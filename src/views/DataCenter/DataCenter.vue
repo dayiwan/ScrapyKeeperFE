@@ -87,7 +87,7 @@ export default {
     };
   },
   mounted() {
-    this.init()
+    this.init();
   },
   methods: {
     async init() {
@@ -95,10 +95,13 @@ export default {
         lock: true,
         spinner: "el-icon-loading"
       });
-      await this.getStatus();
-      await this.getProjectWeekData();
-      await this.getDataTrend();
-      loading.close();
+      try {
+        await this.getStatus();
+        await this.getProjectWeekData();
+        await this.getDataTrend();
+      } finally {
+        loading.close();
+      }
     },
     // 获取七天内数据总入库量趋势
     async getDataTrend() {

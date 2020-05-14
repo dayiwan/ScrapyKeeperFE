@@ -10,8 +10,9 @@ module.exports = {
             }
         }
     },
+    assetsDir: "static",
     //打包配置
-    publicPath: './',
+    // publicPath: './',
     //svg
     chainWebpack: config => {
         const svgRule = config.module.rule('svg')
