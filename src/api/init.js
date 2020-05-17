@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+const querystring = require('querystring')
 
 const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.3:5060' : ''
 
@@ -53,7 +54,62 @@ requestMultipart.interceptors.response.use(
     handleError
 )
 
+
+
+class BaseRequest {
+
+    constructor(url) {
+        this.url = url
+    }
+
+
+    get(param) {
+        return new Promise((resolve, reject) => {
+            request.get(this.url, param).then((res) => {
+                resolve(res)
+            }).catch((e) => {
+                reject(e)
+            })
+        })
+    }
+
+    post(data) {
+        return new Promise((resolve, reject) => {
+            request.post(this.url, querystring.stringify(data)).then((res) => {
+                resolve(res)
+            }).catch((e) => {
+                reject(e)
+            })
+        })
+    }
+
+    put(data) {
+        return new Promise((resolve, reject) => {
+            request.put(this.url, querystring.stringify(data)).then((res) => {
+                resolve(res)
+            }).catch((e) => {
+                reject(e)
+            })
+        })
+    }
+
+    delete(data) {
+        return new Promise((resolve, reject) => {
+            request({
+                url: this.url,
+                method: 'delete',
+                params: data
+            }).then((res) => {
+                resolve(res)
+            }).catch((e) => {
+                reject(e)
+            })
+        })
+    }
+}
+
 export {
     request,
-    requestMultipart
+    requestMultipart,
+    BaseRequest
 }

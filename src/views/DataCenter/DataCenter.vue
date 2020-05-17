@@ -1,7 +1,7 @@
 <template>
   <div class="data-center" v-if="flag">
     <!-- 服务器状态饼图组件 -->
-    <ServerStatus :data="pieChartList" />
+    <!-- <ServerStatus :data="pieChartList" /> -->
 
     <!-- 数据概览组件 -->
     <DataOverview :num="num" :totalSize="totalSize" :fileSize="fileSize" />
@@ -18,7 +18,7 @@
     </div>
 
     <el-drawer :visible.sync="drawerShow" :show-close="false">
-      <el-form :model="emailForm" label-position="top" class="email-form">
+      <el-form label-position="top" class="email-form">
         <h3>邮件通知配置</h3>
         <div class="email-tips">
           系统会对爬虫任务进程、节点健康情况、任务采集数量进行监控
@@ -26,11 +26,15 @@
         </div>
         <div class="email-form-area">
           <h4>已添加邮箱</h4>
-          <div v-if="emailForm.emails.length > 0">
-            <el-row v-for="email in emailForm.emails" :key="email">
-              <el-col :span="12">{{ email }}</el-col>
+          <div v-if="emailArr.length > 0">
+            <el-row v-for="email in emailArr" :key="email.id">
+              <el-col :span="12">{{ email.email }}</el-col>
               <el-col :span="12">
-                <i class="el-icon-delete" style="color: #ff3d3d; cursor: pointer;"></i>
+                <i
+                  class="el-icon-delete"
+                  style="color: #ff3d3d; cursor: pointer;"
+                  @click="delEmail(email.id)"
+                ></i>
               </el-col>
             </el-row>
           </div>
@@ -44,7 +48,6 @@
         </el-form-item>
 
         <el-button size="small" @click="addEmail">添加</el-button>
-        <el-button size="small" type="primary">提交</el-button>
       </el-form>
     </el-drawer>
   </div>
@@ -103,17 +106,16 @@
 </style>
 
 <script>
-import ServerStatus from "./components/ServerStatus/ServerStatus";
 import DataOverview from "./components/DataOverview/DataOverview";
 import ProjectData from "./components/ProjectData/ProjectData";
 import AllData from "./components/AllData/AllData";
 
 import { apiGetStatus, apiGetProjectWeekData } from "@/api/dataCentral";
 import { getDataTrend } from "@/api/project";
+import apiEmail from "@/api/email";
 
 export default {
   components: {
-    ServerStatus,
     DataOverview,
     ProjectData,
     AllData
@@ -123,44 +125,6 @@ export default {
       num: 0,
       totalSize: 0,
       fileSize: 0,
-      pieChartList: [
-        {
-          domId: "cpu-chart",
-          title: "CPU使用量",
-          legendData: ["已使用", "未使用"],
-          seriesData: [
-            { value: 0, name: "已使用" },
-            { value: 0, name: "未使用" }
-          ]
-        },
-        {
-          domId: "RAM-chart",
-          title: "内存使用量",
-          legendData: ["已使用", "未使用"],
-          seriesData: [
-            { value: 0, name: "已使用" },
-            { value: 0, name: "未使用" }
-          ]
-        },
-        {
-          domId: "project-running-chart",
-          title: "运行率",
-          legendData: ["正在运行", "等待"],
-          seriesData: [
-            { value: 0, name: "正在运行" },
-            { value: 0, name: "等待" }
-          ]
-        },
-        {
-          domId: "project-running-status-chart",
-          title: "错误率",
-          legendData: ["正常", "错误"],
-          seriesData: [
-            { value: 0, name: "错误" },
-            { value: 0, name: "正常" }
-          ]
-        }
-      ],
       weekData: [],
       timeline: [],
       xAxislLabel: [],
@@ -170,10 +134,48 @@ export default {
         columns: []
       },
       drawerShow: false,
-      emailForm: {
-        emails: []
-      },
-      emailInputing: ""
+      emailArr: [],
+      emailInputing: "",
+      apiEmail
+
+      // pieChartList: [
+      //   {
+      //     domId: "cpu-chart",
+      //     title: "CPU使用量",
+      //     legendData: ["已使用", "未使用"],
+      //     seriesData: [
+      //       { value: 0, name: "已使用" },
+      //       { value: 0, name: "未使用" }
+      //     ]
+      //   },
+      //   {
+      //     domId: "RAM-chart",
+      //     title: "内存使用量",
+      //     legendData: ["已使用", "未使用"],
+      //     seriesData: [
+      //       { value: 0, name: "已使用" },
+      //       { value: 0, name: "未使用" }
+      //     ]
+      //   },
+      //   {
+      //     domId: "project-running-chart",
+      //     title: "运行率",
+      //     legendData: ["正在运行", "等待"],
+      //     seriesData: [
+      //       { value: 0, name: "正在运行" },
+      //       { value: 0, name: "等待" }
+      //     ]
+      //   },
+      //   {
+      //     domId: "project-running-status-chart",
+      //     title: "错误率",
+      //     legendData: ["正常", "错误"],
+      //     seriesData: [
+      //       { value: 0, name: "错误" },
+      //       { value: 0, name: "正常" }
+      //     ]
+      //   }
+      // ],
     };
   },
   mounted() {
@@ -181,9 +183,10 @@ export default {
   },
   methods: {
     async init() {
-      this.getStatus();
+      // this.getStatus();
       this.getProjectWeekData();
       this.getDataTrend();
+      this.listEmail();
     },
     // 获取七天内数据总入库量趋势
     async getDataTrend() {
@@ -198,31 +201,6 @@ export default {
           columns: []
         };
       }
-    },
-    async getStatus() {
-      const res = await apiGetStatus();
-      this.flag = true;
-      this.pieChartList[0].seriesData[0].value = parseInt(res.cupStatus.used);
-      this.pieChartList[0].seriesData[1].value = parseInt(res.cupStatus.Unused);
-      this.pieChartList[1].seriesData[0].value = parseInt(res.memorystate.used);
-      this.pieChartList[1].seriesData[1].value = parseInt(
-        res.memorystate.Unused
-      );
-      this.pieChartList[2].seriesData[0].value = parseInt(
-        res.project_running_status.running
-      );
-      this.pieChartList[2].seriesData[1].value = parseInt(
-        res.project_running_status.waitting
-      );
-      this.pieChartList[3].seriesData[0].value = parseInt(
-        res.project_error_rate_status.error
-      );
-      this.pieChartList[3].seriesData[1].value = parseInt(
-        res.project_error_rate_status.normal
-      );
-      this.num = res.dataCount;
-      this.fileSize = res.file_size;
-      this.totalSize = res.data_size;
     },
     async getProjectWeekData() {
       var res = await apiGetProjectWeekData();
@@ -239,18 +217,61 @@ export default {
       this.timeline = res.xAxis;
       this.xAxislLabel = res.label_data;
     },
-    addEmail() {
+    async listEmail() {
+      this.emailArr = await this.apiEmail.get();
+      console.log(this.emailArr);
+    },
+
+    async addEmail() {
       if (!this.emailInputing.match(/^\d+$/)) {
-        this.$message.error('请填写QQ邮箱')
+        this.$message.error("请填写QQ邮箱");
         return;
       }
       const email = this.emailInputing + "@qq.com";
-      if (this.emailForm.emails.indexOf(email) > -1) {
-        this.$message.info("已经添加过该邮箱");
-      } else {
-        this.emailForm.emails.push(email);
+      for (const mail of this.emailArr) {
+        if (mail.email == email) {
+          this.$message.info("已经添加过该邮箱");
+          return;
+        }
       }
+
+      const loading = this.$loading();
+      await this.apiEmail.post({ email });
+      await this.listEmail();
+      loading.close();
+    },
+    async delEmail(id) {
+      const loading = this.$loading();
+      await this.apiEmail.delete({ id });
+      await this.listEmail();
+      loading.close();
     }
+
+    // async getStatus() {
+    //   const res = await apiGetStatus();
+    //   this.flag = true;
+    //   this.pieChartList[0].seriesData[0].value = parseInt(res.cupStatus.used);
+    //   this.pieChartList[0].seriesData[1].value = parseInt(res.cupStatus.Unused);
+    //   this.pieChartList[1].seriesData[0].value = parseInt(res.memorystate.used);
+    //   this.pieChartList[1].seriesData[1].value = parseInt(
+    //     res.memorystate.Unused
+    //   );
+    //   this.pieChartList[2].seriesData[0].value = parseInt(
+    //     res.project_running_status.running
+    //   );
+    //   this.pieChartList[2].seriesData[1].value = parseInt(
+    //     res.project_running_status.waitting
+    //   );
+    //   this.pieChartList[3].seriesData[0].value = parseInt(
+    //     res.project_error_rate_status.error
+    //   );
+    //   this.pieChartList[3].seriesData[1].value = parseInt(
+    //     res.project_error_rate_status.normal
+    //   );
+    //   this.num = res.dataCount;
+    //   this.fileSize = res.file_size;
+    //   this.totalSize = res.data_size;
+    // },
   }
 };
 </script>
