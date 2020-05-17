@@ -2,27 +2,25 @@
   <div class="app-container">
     <div class="tpl-list">
       <TemplateCard
-        v-for="(tpl, index) in tplArr"
+        v-for="tpl in tplArr"
+        :key="tpl.id"
         :name="tpl.tpl_zh"
-        :key="index"
         :imgSrc="`data:image/jpg;base64,${tpl.tpl_img}`"
+        :id="tpl.id"
+        @del="onDelete"
+        @click.native="onTmplCardClick(tpl)"
       />
-      <div class="template-card add-template" @click="addProjDialogShow = true">+</div>
+      <div class="template-card add-template" @click="dialogShow = true">+</div>
     </div>
 
-    <!-- 编辑工程对话框 -->
-    <EditBaseInfo
-      :visible="editDialog"
-      :form="editForm"
-      v-on:cancle="cancle"
-      v-on:editInfo="editInfoSubmit"
-    />
-    <!-- 添加模板对话框 -->
-    <AddProjectDialog
-      :visible="addProjDialogShow"
-      @addProjectCancle="addProjectCancle"
-      @addProjectSubmit="addProjectSubmit"
-    />
+    <el-dialog :visible.sync="dialogShow" title="模板管理">
+      <TemplateForm @confirm="onTmplFormConfirm" />
+    </el-dialog>
+
+    <el-dialog :visible.sync="editDialogShow" title="模板管理">
+      <TemplateEditForm @confirm="onTmplEditConfirm" :template="editForm" />
+    </el-dialog>
+
   </div>
 </template>
 
@@ -33,7 +31,7 @@ import {
   delProject,
   apiAddProject
 } from "@/api/project";
-import { apiAddTmpl, apiGetTmpl, delTmpl, apiEditTmpl } from "@/api/templates";
+import { apiAddTmpl, apiGetTmpl, delTmpl, apiEditTmpl, apiDelTmpl } from "@/api/templates";
 import {
   apidRunImmediately,
   apidCancleRunning,
@@ -41,14 +39,13 @@ import {
   apiCancelScheduler
 } from "@/api/scheduler";
 import { apiOriginalLog } from "@/api/originalLog";
-import EditBaseInfo from "./components/EditBaseInfo";
-import AddProjectDialog from "./components/AddProjectDialog";
-import Toolbar from "./components/Toolbar";
+import TemplateEditForm from "./components/TemplateEditForm";
 import TemplateCard from "./components/TemplateCard";
+import TemplateForm from "./components/TemplateForm";
 
 export default {
   name: "templates",
-  components: { EditBaseInfo, AddProjectDialog, TemplateCard },
+  components: { TemplateEditForm, TemplateCard, TemplateForm },
   data() {
     return {
       modelMap: new Map([
@@ -57,42 +54,21 @@ export default {
         ["gongzhonghao", "微信公众号"]
       ]),
       tplArr: [],
-      list: null,
-      editDialog: false,
       editForm: {
         id: null,
-        name_zh: null,
-        status: null,
-        name: null,
-        crawl_name: null,
-        crawl_url: null
+        tpl_name: this.tplName,
+        tpl_zh: this.tplZh,
+        tpl_type: this.type,
+        tpl_input: {}
       },
-      addProjDialogShow: false
+      editDialogShow: false,
+      dialogShow: false
     };
   },
   created() {
     this.listTmpl();
   },
   methods: {
-    // 点击编辑响应事件
-    editeClick(form) {
-      this.editForm.crawl_name = form.crawl_name;
-      this.editForm.name = form.name;
-      this.editForm.crawl_url = form.crawl_url;
-      this.editForm.id = form.id;
-      this.editForm.name_zh = form.name_zh;
-      this.editForm.status = form.status;
-      this.editDialog = true;
-    },
-    // 向后端提交编辑编辑事件
-    async editInfoSubmit(form) {
-      var params = form;
-      params.name_zh = this.modelMap.get(params.name);
-      await apiEditTmpl(params);
-      this.editDialog = false;
-      this.$message.success("编辑成功！");
-      this.listTmpl();
-    },
     // 取消编辑事件
     cancle() {
       this.editDialog = false;
@@ -115,8 +91,8 @@ export default {
       this.listTmpl();
       this.$message.success("删除成功！");
     },
-    // 提交添加模板
-    async addProjectSubmit(form) {
+
+    async onTmplFormConfirm(form) {
       const loading = this.$loading({
         lock: true,
         text: "正在添加, 请耐心等候！",
@@ -124,18 +100,48 @@ export default {
       });
       try {
         const res = await apiAddTmpl(form);
-        this.listTmpl();
-         this.$message.success("添加成功！");
+        await this.listTmpl();
+        this.$message.success("添加成功！");
       } catch (e) {
-        console.error(e)
+        console.error(e);
       } finally {
         loading.close();
-        this.addProjDialogShow = false;
+        this.dialogShow = false;
       }
     },
-    // 取消添加模板
-    addProjectCancle() {
-      this.addProjDialogShow = false;
+    async onDelete(id) {
+      const loading = this.$loading({
+        lock: true,
+        spinner: "el-icon-loading"
+      });
+      try {
+        await apiDelTmpl(id)
+      } finally {
+        this.listTmpl();
+        loading.close();
+      }
+    },
+    async onTmplCardClick(tpl) {
+      this.editForm.id = tpl.id
+      this.editForm.tpl_name = tpl.tpl_name
+      this.editForm.tpl_zh = tpl.tpl_zh
+      this.editForm.tpl_input = JSON.parse(tpl.tpl_input)
+      this.editForm.tpl_type = tpl.tpl_type
+      this.editDialogShow = true;
+    },
+    async onTmplEditConfirm(form) {
+      const loading = this.$loading({
+        lock: true,
+        spinner: "el-icon-loading"
+      });
+      try {
+        await apiEditTmpl(form)
+        this.$message.success('操作成功')
+      } finally {
+        this.listTmpl();
+        loading.close();
+        this.editDialogShow = false;
+      }
     }
   }
 };

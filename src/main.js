@@ -13,8 +13,11 @@ import store from './store'
 import echarts from 'echarts'
 import '@/permission' // permission control
 import 'echarts/map/js/china'
+import deepcopy from 'deepcopy'
+
 Vue.use(VCharts);
 Vue.prototype.$echarts = echarts
+Vue.prototype.$deepcopy = deepcopy
 Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 Vue.component('icon-svg', SvgIcon)

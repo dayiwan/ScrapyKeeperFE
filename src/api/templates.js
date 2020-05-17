@@ -79,3 +79,20 @@ export function apiParseTmpl(rawFile) {
             });
     })
 }
+
+// 删除
+export function apiDelTmpl(id) {
+    return new Promise((resolve, reject) => {
+        request({
+            url: 'template',
+            method: 'delete',
+            params: {
+                id: id
+            }
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="dataCenter" v-if="flag">
+  <div class="data-center" v-if="flag">
     <!-- 服务器状态饼图组件 -->
     <ServerStatus :data="pieChartList" />
 
@@ -11,10 +11,95 @@
 
     <!-- 近一周采集量组件 -->
     <ProjectData :data="weekData" :timeline="timeline" :xAxislLabel="xAxislLabel" />
+
+    <div class="email-fixed" @click="drawerShow = true">
+      <i class="el-icon-s-promotion"></i>
+      <span>邮件通知</span>
+    </div>
+
+    <el-drawer :visible.sync="drawerShow" :show-close="false">
+      <el-form :model="emailForm" label-position="top" class="email-form">
+        <h3>邮件通知配置</h3>
+        <div class="email-tips">
+          系统会对爬虫任务进程、节点健康情况、任务采集数量进行监控
+          <br />配置邮件用于接收爬虫进程、爬虫节点的健康异常告警，采集数量统计邮件
+        </div>
+        <div class="email-form-area">
+          <h4>已添加邮箱</h4>
+          <div v-if="emailForm.emails.length > 0">
+            <el-row v-for="email in emailForm.emails" :key="email">
+              <el-col :span="12">{{ email }}</el-col>
+              <el-col :span="12">
+                <i class="el-icon-delete" style="color: #ff3d3d; cursor: pointer;"></i>
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>无</div>
+        </div>
+
+        <el-form-item label="通知邮箱">
+          <el-input v-model="emailInputing" size="small">
+            <template slot="append">@qq.com</template>
+          </el-input>
+        </el-form-item>
+
+        <el-button size="small" @click="addEmail">添加</el-button>
+        <el-button size="small" type="primary">提交</el-button>
+      </el-form>
+    </el-drawer>
   </div>
+  <div v-else class="data-center-loading">加载中...</div>
 </template>
 
 <style lang="scss" >
+.data-center-loading {
+  height: 400px;
+  @include flex();
+  font-size: 18px;
+}
+.email-fixed {
+  @include flex(column);
+  width: 64px;
+  height: 64px;
+  position: fixed;
+  bottom: 30%;
+  right: 20px;
+
+  background-color: royalblue;
+  color: white;
+  border-radius: 64px;
+  cursor: pointer;
+  i {
+    font-size: 25px;
+  }
+  span {
+    font-size: 12px;
+  }
+}
+
+.email-form {
+  padding: 20px;
+
+  h3 {
+    margin-bottom: 5px;
+  }
+
+  &-area {
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    margin-top: 20px;
+
+    h4 {
+      margin-top: 0;
+    }
+  }
+
+  .email-tips {
+    font-size: 10px;
+    color: #666;
+  }
+}
 </style>
 
 <script>
@@ -83,7 +168,12 @@ export default {
       pictureData: {
         rows: [],
         columns: []
-      }
+      },
+      drawerShow: false,
+      emailForm: {
+        emails: []
+      },
+      emailInputing: ""
     };
   },
   mounted() {
@@ -91,21 +181,14 @@ export default {
   },
   methods: {
     async init() {
-      const loading = this.$loading({
-        lock: true,
-        spinner: "el-icon-loading"
-      });
-      try {
-        await this.getStatus();
-        await this.getProjectWeekData();
-        await this.getDataTrend();
-      } finally {
-        loading.close();
-      }
+      this.getStatus();
+      this.getProjectWeekData();
+      this.getDataTrend();
     },
     // 获取七天内数据总入库量趋势
     async getDataTrend() {
       const res = await getDataTrend({});
+      this.flag = true;
       if (res.length > 0) {
         this.pictureData.rows = res;
         this.pictureData.columns = ["日期", "入库量"];
@@ -143,6 +226,7 @@ export default {
     },
     async getProjectWeekData() {
       var res = await apiGetProjectWeekData();
+      this.flag = true;
       var options = [];
       for (var j = 0, len = res.xAxis.length; j < len; j++) {
         var temp = {
@@ -154,6 +238,18 @@ export default {
       this.weekData = options;
       this.timeline = res.xAxis;
       this.xAxislLabel = res.label_data;
+    },
+    addEmail() {
+      if (!this.emailInputing.match(/^\d+$/)) {
+        this.$message.error('请填写QQ邮箱')
+        return;
+      }
+      const email = this.emailInputing + "@qq.com";
+      if (this.emailForm.emails.indexOf(email) > -1) {
+        this.$message.info("已经添加过该邮箱");
+      } else {
+        this.emailForm.emails.push(email);
+      }
     }
   }
 };

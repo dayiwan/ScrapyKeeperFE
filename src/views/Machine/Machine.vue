@@ -8,7 +8,7 @@
   >
     <el-table
       :data="list"
-      v-loading.body="listLoading"
+      v-loading.body="loading"
       element-loading-text="Loading"
       border
       fit
@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column label="服务器类型" width="200">
         <template slot-scope="scope">
-          <span v-if="Number(scope.row.is_master) == 1">主服务器</span>
+          <span v-if="scope.row.is_master == 1">主服务器</span>
           <span v-else>从服务器</span>
         </template>
       </el-table-column>
@@ -31,80 +31,20 @@
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="editmachineForm=JSON.parse(JSON.stringify(scope.row)); editmachineFormSubmit=JSON.parse(JSON.stringify(scope.row)); dialogVisible = true;"
-          >编辑</el-button>
+          <el-button size="mini" @click="onEditBtnClick(scope.row)">编辑</el-button>
           <el-button size="mini" @click="delMachine(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-button id="add_server" type="primary" @click="dialogFormVisible = true">添加服务器</el-button>
+    <el-button id="add_server" type="primary" @click="dialogShow = true; handler.type='ADD'">添加服务器</el-button>
 
-    <el-dialog title="添加服务器" :visible.sync="dialogFormVisible">
-      <el-form :model="machineForm" :rules="machineRules" ref="machineForm">
-        <el-form-item label="服务器ip" label-width="200" prop="server_ip">
-          <el-input
-            name="server_ip"
-            v-model="machineForm.server_ip"
-            auto-complete="off"
-            placeholder="格式: http://172.10.10.183:6800"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="服务器状态" label-width="200">
-          <el-input
-            name="server_status"
-            v-model="machineForm.server_status"
-            auto-complete="off"
-            :disabled="true"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="是否为主服务器" label-width="200">
-          <select v-model="machineForm.is_master" name="is_master">
-            <option label="是" value="1">是</option>
-            <option label="否" value="0" selected="selected">否</option>
-          </select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addMachine">添加</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog title="编辑服务器" :visible.sync="dialogVisible" width="600px">
-      <el-form :model="editmachineForm" :rules="editmachineRules" ref="editmachineForm">
-        <el-form-item label="服务器ip" label-width="200" prop="server_ip">
-          <el-input
-            name="server_ip"
-            v-model="editmachineForm.server_ip"
-            auto-complete="off"
-            placeholder="格式: http://172.10.10.183:6800"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="服务器状态" label-width="200">
-          <el-input
-            name="server_status"
-            v-model="editmachineForm.server_status"
-            auto-complete="off"
-            :disabled="true"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="是否为主服务器" label-width="200">
-          <select v-model="editmachineForm.is_master" name="is_master">
-            <option label="是" value="1">是</option>
-            <option label="否" value="0" selected="selected">否</option>
-          </select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editMachine">确定</el-button>
-      </div>
+    <el-dialog title="添加服务器" :visible.sync="dialogShow">
+      <machineForm
+        :url.sync="machineForm.url"
+        :isMaster.sync="machineForm.is_master"
+        :status.sync="machineForm.status"
+        @confirm="onMachineFormConfirm"
+      />
     </el-dialog>
   </div>
 </template>
@@ -122,94 +62,104 @@ import {
   apiDelMachine,
   apiEditMachine
 } from "@/api/machine";
+import machineForm from "./components/MachineForm";
 export default {
+  components: { machineForm },
   data() {
     return {
       list: [],
-      editmachineForm: {},
-      editmachineFormSubmit: {},
       machineForm: {
-        server_ip: null,
-        server_status: "1",
+        url: "",
+        status: 1,
         is_master: 0
       },
-      machineRules: {
-        server_ip: [
-          { required: true, message: "请输入服务器地址！", trigger: "blur" }
-        ]
-      },
-      editmachineRules: {
-        server_ip: [
-          { required: true, message: "请输入服务器地址！", trigger: "blur" }
-        ]
+      // 操作【新增、编辑】
+      handler: {
+        type: "ADD",
+        id: null
       },
       loading: false,
-      listLoading: false,
-      dialogFormVisible: false,
-      dialogVisible: false
+      dialogShow: false
     };
   },
   created() {
     this.listMachine();
   },
+  mounted() {},
   methods: {
+    onEditBtnClick(row) {
+      this.handler.type = "EDIT"
+      this.handler.id = row.id;
+      this.machineForm.url = row.url;
+      this.machineForm.status = row.status;
+      this.machineForm.is_master = row.is_master;
+
+      this.dialogShow = true;
+    },
+
     // 获取服务器列表
     async listMachine() {
-      this.listLoading = true;
+      this.loading = true;
       try {
         const res = await apiListMachine();
-        this.list = []
+        this.list = [];
         for (const machRes of res) {
-          this.list.push(machRes)
+          this.list.push(machRes);
         }
       } catch (e) {
         this.$message.error("服务器列表获取错误 " + e);
       }
-      this.listLoading = false;
+      this.loading = false;
     },
 
     // 添加服务器
-    addMachine() {
-      this.$refs.machineForm.validate(async valid => {
-        if (valid) {
-          this.loading = true;
-          const res = await apiAddmachine(this.machineForm);
-          this.$message.success("添加成功");
-          this.listMachine();
-          this.loading = false;
-          this.dialogFormVisible = false;
-         
-        } else {
-          return false;
-        }
-      });
+    async addMachine(form) {
+      this.dialogShow = false;
+      this.loading = true;
+      try {
+        await apiAddmachine(form);
+        await this.listMachine();
+        const res = this.$message.success("添加成功");
+      } finally {
+        this.loading = false;
+      }
     },
 
     // 编辑服务器
-    async editMachine() {
-      this.listLoading = true;
+    async editMachine(form) {
+      this.loading = true;
+      this.dialogShow = false;
       try {
-        await apiEditMachine(this.editmachineForm);
-        this.listMachine();
-      } catch (e) {
-        console.log()
+        await apiEditMachine(form);
+        await this.listMachine();
+        this.$message.success("操作成功");
+      } finally {
+         this.loading = false;
       }
-      this.listLoading = false;
-      this.dialogVisible = false;
     },
 
     // 删除服务器
     delMachine: function(id) {
-      this.listLoading = false;
       this.$confirm("是否删除?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then( async () => {
+      }).then(async () => {
         await apiDelMachine(id);
-        this.$message.success('删除成功')
-        this.listMachine();
-      })
+        this.$message.success("删除成功");
+        await this.listMachine();
+      });
+    },
+    onMachineFormConfirm: function() {
+      const _form = this.$deepcopy(this.machineForm);
+      if (this.handler.type == "ADD") {
+        this.addMachine(_form);
+      } else if (this.handler.type == "EDIT") {
+        _form.id = this.handler.id
+        this.editMachine(_form)
+      } else {
+        this.$message.error("错误的操作类型！");
+      }
     }
   }
 };

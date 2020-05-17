@@ -1,12 +1,11 @@
-import { request } from '@/api/init'
-const querystring = require('querystring')
+import { request } from '@/api/init.js'
+const querystring = require('querystring');
 
-
-// 新的请求函数， 获取服务器列表请求
-export function apiListMachine() {
+// 查询
+export function apiListAgency() {
     return new Promise((resolve, reject) => {
         request({
-            url: 'server_machine',
+            url: 'proxy_ip_agency',
             method: 'get'
         }).then((res) => {
             resolve(res)
@@ -16,13 +15,13 @@ export function apiListMachine() {
     })
 }
 
-// 添加服务器
-export function apiAddmachine(machine) {
+// 添加
+export function apiAddAgency(agency) {
     return new Promise((resolve, reject) => {
         request({
-            url: 'server_machine',
+            url: 'proxy_ip_agency',
             method: 'post',
-            data: querystring.stringify(machine)
+            data: querystring.stringify(agency)
         }).then((res) => {
             resolve(res)
         }).catch((e) => {
@@ -31,28 +30,29 @@ export function apiAddmachine(machine) {
     })
 }
 
-// 删除服务器
-export function apiDelMachine(id) {
+// 编辑
+export function apiEditAgency(agency) {
     return new Promise((resolve, reject) => {
         request({
-            url: 'server_machine',
-            method: 'delete',
-            params: { id }
-        }).then((res) => {
-            resolve(res)
-        }).catch((e) => {
-            reject(e)
-        })
-    })
-}
-
-// 编辑服务器
-export function apiEditMachine(machine) {
-    return new Promise((resolve, reject) => {
-        request({
-            url: 'server_machine',
+            url: 'proxy_ip_agency',
             method: 'put',
-            data: querystring.stringify(machine)
+            data: querystring.stringify(agency)
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+}
+// 删除
+export function apiDelAgency(id) {
+    return new Promise((resolve, reject) => {
+        request({
+            url: 'proxy_ip_agency',
+            method: 'delete',
+            params: {
+                id: id
+            }
         }).then((res) => {
             resolve(res)
         }).catch((e) => {
