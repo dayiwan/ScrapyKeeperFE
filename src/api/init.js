@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 
-const baseURL = process.env.NODE_ENV == 'development' ? 'http://localhost:5060' : ''
+const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.3:5060' : ''
 
 
 const handelSuccess = response => {

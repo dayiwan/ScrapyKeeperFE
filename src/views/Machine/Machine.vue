@@ -25,7 +25,10 @@
       </el-table-column>
       <el-table-column align="center" label="状态" width="155">
         <template slot-scope="scope">
-          <span style="font-weight: 700;" v-if="scope.row.status == 1">可用</span>
+          <span style="font-weight: 700;" v-if="scope.row.status == 1">
+            可用
+            <el-button type="text" style="padding-left: 10px" @click="watchDetail(scope.row.url)">查看详情</el-button>
+          </span>
           <span style="color: #999999;" v-else>不可用</span>
         </template>
       </el-table-column>
@@ -38,6 +41,7 @@
     </el-table>
     <el-button id="add_server" type="primary" @click="dialogShow = true; handler.type='ADD'">添加服务器</el-button>
 
+    <!-- 添加服务器弹框  -->
     <el-dialog title="添加服务器" :visible.sync="dialogShow">
       <machineForm
         :url.sync="machineForm.url"
@@ -45,6 +49,11 @@
         :status.sync="machineForm.status"
         @confirm="onMachineFormConfirm"
       />
+    </el-dialog>
+
+    <!-- 查看服务器节点详情弹框 -->
+    <el-dialog title="节点详情" :visible.sync="dialogDetailShow">
+      <machineDetailForm/>
     </el-dialog>
   </div>
 </template>
@@ -60,11 +69,13 @@ import {
   apiListMachine,
   apiAddmachine,
   apiDelMachine,
-  apiEditMachine
+  apiEditMachine,
+  apiDetailMachine
 } from "@/api/machine";
 import machineForm from "./components/MachineForm";
+import machineDetailForm from "./components/machineDetailForm"
 export default {
-  components: { machineForm },
+  components: { machineForm, machineDetailForm },
   data() {
     return {
       list: [],
@@ -79,7 +90,8 @@ export default {
         id: null
       },
       loading: false,
-      dialogShow: false
+      dialogShow: false,
+      dialogDetailShow: true
     };
   },
   created() {
@@ -87,8 +99,24 @@ export default {
   },
   mounted() {},
   methods: {
+    //查看服务器节点详情
+    async watchDetail(ip) {
+      this.loading = true
+      try {
+        var params = {
+          url: ip
+        }
+        const res = await apiDetailMachine(params)
+        this.dialogDetailShow = true
+        console.log(res, '节点详情')
+        console.log('333333333333333333333', ip)
+      } catch(e) {
+        this.$$message.error("获取详情错误" + e)
+      }
+      this.loading = false
+    },
     onEditBtnClick(row) {
-      this.handler.type = "EDIT"
+      this.handler.type = "EDIT";
       this.handler.id = row.id;
       this.machineForm.url = row.url;
       this.machineForm.status = row.status;
@@ -134,7 +162,7 @@ export default {
         await this.listMachine();
         this.$message.success("操作成功");
       } finally {
-         this.loading = false;
+        this.loading = false;
       }
     },
 
@@ -155,8 +183,8 @@ export default {
       if (this.handler.type == "ADD") {
         this.addMachine(_form);
       } else if (this.handler.type == "EDIT") {
-        _form.id = this.handler.id
-        this.editMachine(_form)
+        _form.id = this.handler.id;
+        this.editMachine(_form);
       } else {
         this.$message.error("错误的操作类型！");
       }

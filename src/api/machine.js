@@ -2,6 +2,21 @@ import { request } from '@/api/init'
 const querystring = require('querystring')
 
 
+// 获取服务器节点详情
+export function apiDetailMachine(params) {
+    return new Promise((resolve, reject) => {
+        request({
+            url: 'server_machine',
+            method: 'get',
+            params: params
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+}
+
 // 新的请求函数， 获取服务器列表请求
 export function apiListMachine() {
     return new Promise((resolve, reject) => {
