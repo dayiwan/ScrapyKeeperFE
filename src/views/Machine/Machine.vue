@@ -53,7 +53,7 @@
 
     <!-- 查看服务器节点详情弹框 -->
     <el-dialog title="节点详情" :visible.sync="dialogDetailShow">
-      <machineDetailForm/>
+      <machineDetail :detailForm="detailForm" />
     </el-dialog>
   </div>
 </template>
@@ -65,19 +65,14 @@
 </style>
 
 <script>
-import {
-  apiListMachine,
-  apiAddmachine,
-  apiDelMachine,
-  apiEditMachine,
-  apiDetailMachine
-} from "@/api/machine";
+import apiMachine from '@/api/machine'
 import machineForm from "./components/MachineForm";
-import machineDetailForm from "./components/machineDetailForm"
+import machineDetail from "./components/MachineDetail"
 export default {
-  components: { machineForm, machineDetailForm },
+  components: { machineForm, machineDetail },
   data() {
     return {
+      detailForm: {},
       list: [],
       machineForm: {
         url: "",
@@ -91,7 +86,8 @@ export default {
       },
       loading: false,
       dialogShow: false,
-      dialogDetailShow: true
+      dialogDetailShow: false,
+      apiMachine
     };
   },
   created() {
@@ -103,15 +99,64 @@ export default {
     async watchDetail(ip) {
       this.loading = true
       try {
-        var params = {
-          url: ip
+        const rawdata = await apiMachine.get({url: ip})
+        const data = {
+          cpu: [
+            {
+              name: 'CPU使用率：',
+              value: rawdata.cpu.percent
+            }
+          ],
+          memory: [
+            {
+              name: '内存使用率：',
+              value: rawdata.memory.percent
+            },
+            {
+              name: '内存总量：',
+              value: rawdata.memory.total
+            }
+          ],
+          disk: [
+            {
+              name: '硬盘使用率：',
+              value: rawdata.disk.percent
+            },
+            {
+              name: '硬盘总量：',
+              value: rawdata.disk.total
+            }
+          ],
+          network: [
+            {
+              name: '带宽上传量：',
+              value: rawdata.network.send
+            },
+            {
+              name: '带宽下载量：',
+              value: rawdata.network.receive
+            }
+          ],
+          info: [
+            {
+              name: '运行中：',
+              value: rawdata.running
+            },
+            {
+              name: '休眠中：',
+              value: rawdata.pending
+            },
+            {
+              name: '已完成：',
+              value: rawdata.finished
+            }
+          ],
+          node_name: rawdata.node_name,
         }
-        const res = await apiDetailMachine(params)
         this.dialogDetailShow = true
-        console.log(res, '节点详情')
-        console.log('333333333333333333333', ip)
+        this.detailForm = data
       } catch(e) {
-        this.$$message.error("获取详情错误" + e)
+        this.$$message.error("获取详情失败" + e)
       }
       this.loading = false
     },
@@ -129,7 +174,7 @@ export default {
     async listMachine() {
       this.loading = true;
       try {
-        const res = await apiListMachine();
+        const res = await this.apiMachine.get();
         this.list = [];
         for (const machRes of res) {
           this.list.push(machRes);
@@ -145,7 +190,7 @@ export default {
       this.dialogShow = false;
       this.loading = true;
       try {
-        await apiAddmachine(form);
+        await this.apiMachine.post(form);
         await this.listMachine();
         const res = this.$message.success("添加成功");
       } finally {
@@ -158,7 +203,7 @@ export default {
       this.loading = true;
       this.dialogShow = false;
       try {
-        await apiEditMachine(form);
+        await this.apiMachine.put(form);
         await this.listMachine();
         this.$message.success("操作成功");
       } finally {
@@ -173,7 +218,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
-        await apiDelMachine(id);
+        await this.apiMachine.delete({ id })
         this.$message.success("删除成功");
         await this.listMachine();
       });
@@ -192,3 +237,4 @@ export default {
   }
 };
 </script>
+
