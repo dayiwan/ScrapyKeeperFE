@@ -20,8 +20,11 @@ const handleError = error => {
             message: error.response.data.message
         })
     } else {
+
         Message.error({
-            message: error
+            message: error,
+            showClose: true,
+            duration: 0
         })
     }
     console.error('ERROR ' + error) // for debug
