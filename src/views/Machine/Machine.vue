@@ -148,7 +148,7 @@ export default {
         await apiDelMachine(id);
         this.$message.success("删除成功");
         await this.listMachine();
-      });
+      }).catch(() => {});
     },
     onMachineFormConfirm: function() {
       const _form = this.$deepcopy(this.machineForm);

@@ -64,7 +64,6 @@ import {
   apiListAgency,
   apiEditAgency
 } from "@/api/proxyIp";
-import * as deepcopy from "deepcopy";
 import ProxyIpForm from "./components/ProxyIpForm";
 export default {
   components: { ProxyIpForm },
@@ -111,7 +110,7 @@ export default {
     onEditBtnClick(row) {
       this.hanlder.id = row.id;
       this.hanlder.type = "EDIT";
-      this.agent = deepcopy(row);
+      this.agent = this.$deepcopy(row);
       this.agent.params = JSON.parse(this.agent.params);
       this.agent.headers = JSON.parse(this.agent.headers);
       this.agent.body = JSON.parse(this.agent.body);
@@ -126,21 +125,27 @@ export default {
         } else {
           await apiEditAgency(form);
         }
-        await this.listAgency()
-        this.$message.success('操作成功')
+        await this.listAgency();
+        this.$message.success("操作成功");
       } finally {
         this.loading = false;
       }
     },
-    async delAgency(id) {
-      try {
-        this.loading = true;
-        await apiDelAgency(id);
-        this.$message.success('删除成功');
-      } finally {
-        await this.listAgency()
-        this.loading = false;
-      }
+    delAgency(id) {
+      this.$confirm("是否删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(async () => {
+        try {
+          this.loading = true;
+          await apiDelAgency(id);
+          this.$message.success("删除成功");
+        } finally {
+          await this.listAgency();
+          this.loading = false;
+        }
+      }).catch(() => {});
     }
   }
 };

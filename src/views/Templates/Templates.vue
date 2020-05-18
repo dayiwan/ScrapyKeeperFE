@@ -8,7 +8,7 @@
         :imgSrc="`data:image/jpg;base64,${tpl.tpl_img}`"
         :id="tpl.id"
         @del="onDelete"
-        @click.native="onTmplCardClick(tpl)"
+        @click="onTmplCardClick(tpl)"
       />
       <div class="template-card add-template" @click="dialogShow = true">+</div>
     </div>
@@ -20,7 +20,6 @@
     <el-dialog :visible.sync="editDialogShow" title="模板管理">
       <TemplateEditForm @confirm="onTmplEditConfirm" :template="editForm" />
     </el-dialog>
-
   </div>
 </template>
 
@@ -31,7 +30,13 @@ import {
   delProject,
   apiAddProject
 } from "@/api/project";
-import { apiAddTmpl, apiGetTmpl, delTmpl, apiEditTmpl, apiDelTmpl } from "@/api/templates";
+import {
+  apiAddTmpl,
+  apiGetTmpl,
+  delTmpl,
+  apiEditTmpl,
+  apiDelTmpl
+} from "@/api/templates";
 import {
   apidRunImmediately,
   apidCancleRunning,
@@ -110,23 +115,31 @@ export default {
       }
     },
     async onDelete(id) {
-      const loading = this.$loading({
-        lock: true,
-        spinner: "el-icon-loading"
-      });
-      try {
-        await apiDelTmpl(id)
-      } finally {
-        this.listTmpl();
-        loading.close();
-      }
+      this.$confirm("是否删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          const loading = this.$loading({
+            lock: true,
+            spinner: "el-icon-loading"
+          });
+          try {
+            await apiDelTmpl(id);
+          } finally {
+            this.listTmpl();
+            loading.close();
+          }
+        })
+        .catch(() => {});
     },
     async onTmplCardClick(tpl) {
-      this.editForm.id = tpl.id
-      this.editForm.tpl_name = tpl.tpl_name
-      this.editForm.tpl_zh = tpl.tpl_zh
-      this.editForm.tpl_input = JSON.parse(tpl.tpl_input)
-      this.editForm.tpl_type = tpl.tpl_type
+      this.editForm.id = tpl.id;
+      this.editForm.tpl_name = tpl.tpl_name;
+      this.editForm.tpl_zh = tpl.tpl_zh;
+      this.editForm.tpl_input = JSON.parse(tpl.tpl_input);
+      this.editForm.tpl_type = tpl.tpl_type;
       this.editDialogShow = true;
     },
     async onTmplEditConfirm(form) {
@@ -135,8 +148,8 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        await apiEditTmpl(form)
-        this.$message.success('操作成功')
+        await apiEditTmpl(form);
+        this.$message.success("操作成功");
       } finally {
         this.listTmpl();
         loading.close();
@@ -164,6 +177,8 @@ export default {
     }
   }
   .add-template {
+    @include flex(column);
+    @include shadow-card();
     font-size: 80px;
   }
 }

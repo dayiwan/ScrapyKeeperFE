@@ -161,6 +161,11 @@ export default {
     }
   }
 
+  .tpl-img {
+    width: 65px;
+    height: 65px;
+  }
+
   .tpl-info {
     padding: 0 20px;
     border: 1px solid #cccccc;
