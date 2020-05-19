@@ -46,7 +46,7 @@ export default {
             var params = {
                 page_size: 1,
                 page_index: 1,
-                project_name_zh: this.$route.params.project_name
+                project_name: this.$route.params.project_name
             };
             const res = await getAllProject(params);
             this.info = res.data[0]
@@ -59,12 +59,11 @@ export default {
 .project-detail{
     padding: 20px 15px;
     .project {
-        padding: 30px 15px;
-        display: flex;
-        flex-direction: row;
+        @include flex();
         justify-content: space-between;
+        padding: 30px 15px;
+        border: 1px solid #cccccc;
         font-size: 16px;
-        background-color: white;
         margin-bottom: 20px;
     }
     .task-box {

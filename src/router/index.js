@@ -100,5 +100,18 @@ export const asyncRouterMap = [{
                 import ('@/views/ProxyIp/ProxyIp'),
             meta: { title: 'IP代理', icon: 'ip', roles: ['leader'] }
         }]
+    },
+    {
+        path: '*',
+        component: () =>
+            import ('@/views/404'),
+
+        // children: [{
+        //     path: '404',
+        //     name: '404',
+        //     component: () =>
+        //         import ('@/views/404'),
+        //     meta: { title: 'IP代理', icon: 'ip', roles: ['leader'] }
+        // }]
     }
 ]
