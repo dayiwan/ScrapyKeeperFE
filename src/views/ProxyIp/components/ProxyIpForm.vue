@@ -99,7 +99,8 @@
 </template>
 
 <script>
-import deepcopy from 'deepcopy';
+var isUrl = require('is-url');
+
 export default {
   props: {
     agent: {
@@ -121,14 +122,14 @@ export default {
   },
   watch: {
     agent: function(val) {
-      this.form = deepcopy(val)
+      this.form = this.$deepcopy(val)
     }
   },
   data() {
     return {
       type: "params",
       paramType: "params",
-      form: deepcopy(this.agent),
+      form: this.$deepcopy(this.agent),
       rules: {
         req_url: [
           { required: true, message: "请输入正确URL", trigger: "blur" },
@@ -156,7 +157,17 @@ export default {
       this.paramType = val;
     },
     onSubmit() {
-      let form = deepcopy(this.form)
+      if (!isUrl(this.form.req_url)) {
+        this.$message.error("请输入合法url")
+        return;
+      }
+
+      if (this.form.agency_name == "") {
+        this.$message.error("请输入代理名称")
+        return;
+      }
+
+      let form = this.$deepcopy(this.form)
       form.params = JSON.stringify(form.params)
       form.headers = JSON.stringify(form.headers)
       form.body = JSON.stringify(form.body)

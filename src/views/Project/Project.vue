@@ -6,7 +6,6 @@
       @Cate="Cate"
       @State="State"
       @Search="Search"
-      @addProject="addProject"
     />
     <!-- 项目列表 -->
     <el-table
@@ -75,6 +74,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <div class="pagination">
       <el-pagination
         background
@@ -84,6 +84,7 @@
         :total="pagination.total"
       ></el-pagination>
     </div>
+
 
     <!-- 数据详情对话框 -->
     <DataDetail
@@ -146,7 +147,8 @@ import {
   apiAddProject,
   getDataTrend,
   apiGetSpareUrl,
-  delJournakApi
+  delJournakApi,
+  apiUploadProject
 } from "@/api/project";
 import {
   apidRunImmediately,
@@ -164,7 +166,6 @@ import Toolbar from "./components/Toolbar";
 import DataTrend from "./components/DataTrend";
 import AddField from "./components/AddField";
 import DataDetail from "./components/DataDetail";
-import deepcopy from 'deepcopy';
 
 export default {
   name: "project",
@@ -176,10 +177,11 @@ export default {
     Toolbar,
     DataTrend,
     AddField,
-    DataDetail
+    DataDetail,
   },
   data() {
     return {
+      addProjShow: true,
       query: {
         category: "",
         status: "",
@@ -261,16 +263,16 @@ export default {
     },
     // 确认添加参数
     async addFieldSubmit(fields) {
-      let fieldAdded = {}
-      let tpl_input = JSON.parse(this.tpl_input)
+      let fieldAdded = {};
+      let tpl_input = JSON.parse(this.tpl_input);
       for (let field of fields) {
         tpl_input[field.key] = {
           tip: field.tip,
           type: field.type,
-          value: field.value.join(',')
-        }
+          value: field.value.join(",")
+        };
       }
-     
+
       var params = {
         id: this.fieldToAddId,
         tpl_input: JSON.stringify(tpl_input)
@@ -292,13 +294,13 @@ export default {
     },
     //查看日志详情
     async ViewLogClick(form) {
-      this.listLoading = true
+      this.listLoading = true;
       this.dialog = true;
       this.title = "日志详情";
       this.journalName = form.project_name;
       const res = await apiOriginalLog(form.id);
       this.logList = res;
-      this.listLoading = false
+      this.listLoading = false;
     },
     //退出日志详情 || 待采队列对话框
     logViewCancle() {
@@ -313,7 +315,7 @@ export default {
     //查看数据详情
     async dataDetail(form) {
       this.title = "数据详情";
-      this.listLoading = true
+      this.listLoading = true;
       var params = {
         project_name: form.project_name,
         tpl_input: form.tpl_input
@@ -329,12 +331,12 @@ export default {
         this.Detail.content = [];
       }
       this.Detail.detail = true;
-      this.listLoading = false
+      this.listLoading = false;
     },
     // 查看待采队列
     async spareUrl(form) {
       this.title = "待采队列";
-      this.listLoading = true
+      this.listLoading = true;
       var params = {
         project_name: form.project_name,
         tpl_input: form.tpl_input
@@ -342,7 +344,7 @@ export default {
       const res = await apiGetSpareUrl(params);
       this.logList = res;
       this.dialog = true;
-      this.listLoading = false
+      this.listLoading = false;
     },
     //退出数据趋势对话框
     dataTrendCancle() {
@@ -350,7 +352,7 @@ export default {
     },
     //查看数据趋势图
     async dataTrendClick(project_name_zh) {
-      this.listLoading = true
+      this.listLoading = true;
       var params = {
         project_name_zh: project_name_zh
       };
@@ -365,7 +367,7 @@ export default {
         };
       }
       this.dataTrendShow = true;
-      this.listLoading = false
+      this.listLoading = false;
     },
     //根据分类进行筛选
     Cate(value) {
@@ -448,10 +450,42 @@ export default {
         this.$message.success("删除成功！");
       });
     },
-    // 点击添加工程按钮
-    addProject(add) {
-      this.addProjectDialog = add;
+
+    // 添加工程
+    async addProject(form) {
+      this.addProjShow = false;
+      const loading = this.$loading({
+        lock: true,
+        text: "工程部署中, 请耐心等候！",
+        spinner: "el-icon-loading"
+      });
+      try {
+        await apiUploadProject(form);
+        await this.listProject();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        loading.close();
+      }
     },
+
+    async addProjectByTpl(form) {
+      this.addProjShow = false;
+      const loading = this.$loading({
+        lock: true,
+        text: "工程部署中, 请耐心等候！",
+        spinner: "el-icon-loading"
+      });
+      try {
+        await apiAddProject(form);
+        await this.listProject();
+      } catch (e) {
+        console.error(e);
+      } finally {
+        loading.close();
+      }
+    },
+
     // 提交添加工程
     async addProjectSubmit(form) {
       this.addProjectDialog = false;
@@ -492,7 +526,7 @@ export default {
     },
     // 点击周期调度按钮， 显示对话框
     schedulerClick(project) {
-      this.schedulerForm = deepcopy(project);
+      this.schedulerForm = this.$deepcopy(project);
       this.schedulerDialog = true;
     },
     // 关闭周期调度对话框

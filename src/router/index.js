@@ -37,6 +37,17 @@ export const asyncRouterMap = [{
         path: '',
         component: Layout,
         children: [{
+            path: 'createProject',
+            name: 'createProject',
+            component: () =>
+                import ('@/views/CreateProject/CreateProject'),
+            meta: { title: '创建工程', icon: 'add_project', roles: ['leader'] }
+        }]
+    },
+    {
+        path: '',
+        component: Layout,
+        children: [{
             path: 'machine',
             name: 'machine',
             component: () =>
@@ -90,16 +101,4 @@ export const asyncRouterMap = [{
            
         }]
     },
-    {
-        path: '',
-        component: Layout,
-        name: '快速SCRAPY',
-        children: [{
-            path: 'fasterscrapy',
-            name: 'fasterscrapy',
-            component: () => import('@/views/FasterScrapy/fasterscrapy'),
-            meta: { title: '快速SCRAPY', icon: 'fd-icon-faster', roles: ['leader'] }
-           
-        }]
-      },
 ]

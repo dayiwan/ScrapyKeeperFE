@@ -23,9 +23,9 @@
         <el-button size="mini" slot="append" type="primary" @click="Search">搜索</el-button>
       </el-input>
     </div>
-    <div class="add-project">
+    <!-- <div class="add-project">
       <el-button round icon="el-icon-plus" size="small" type="primary" @click="addProject">添加工程</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -54,10 +54,6 @@ export default {
         Search() {
           this.$emit("Search", this.name)
         },
-        addProject() {
-          this.$emit("addProject", this.add)
-        }
-
     }
 }
 </script>
