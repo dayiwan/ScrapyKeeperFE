@@ -6,7 +6,6 @@
       @Cate="Cate"
       @State="State"
       @Search="Search"
-      @addProject="addProjShow = true"
     />
     <!-- 项目列表 -->
     <el-table
@@ -84,22 +83,6 @@
       ></el-pagination>
     </div>
 
-    <!-- 添加工程对话框 -->
-    <el-dialog :visible.sync="addProjShow">
-      <el-tabs>
-
-        <el-tab-pane label="按模板生成工程">
-          <AddProjByTplForm :tpl-list="tplList" @submit="addProjectByTpl" />
-        </el-tab-pane>
-
-        <el-tab-pane label="自行上传工程文件">
-          <AddProjForm @submit="addProject" />
-        </el-tab-pane>
-
-
-        
-      </el-tabs>
-    </el-dialog>
 
     <!-- 数据详情对话框 -->
     <DataDetail
@@ -181,8 +164,6 @@ import Toolbar from "./components/Toolbar";
 import DataTrend from "./components/DataTrend";
 import AddField from "./components/AddField";
 import DataDetail from "./components/DataDetail";
-import AddProjForm from './components/AddProjForm'
-import AddProjByTplForm from './components/AddProjByTplForm'
 
 export default {
   name: "project",
@@ -195,8 +176,6 @@ export default {
     DataTrend,
     AddField,
     DataDetail,
-    AddProjForm,
-    AddProjByTplForm
   },
   data() {
     return {
