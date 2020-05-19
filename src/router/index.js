@@ -30,7 +30,7 @@ export const asyncRouterMap = [{
             name: 'project',
             component: () =>
                 import ('@/views/Project/Project.vue'),
-            meta: { title: '项目管理', icon: 'list', roles: ['leader'] }
+            meta: { title: '项目管理', icon: 'list', roles: ['leader'] },
         }]
     },
     {

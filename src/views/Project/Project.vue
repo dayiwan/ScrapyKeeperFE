@@ -81,8 +81,13 @@
         :page-size="pagination.pageSize"
         :total="pagination.total"
       ></el-pagination>
+      <el-button @click="bump">详情</el-button>
     </div>
 
+    <!-- 工程详情对话框 -->
+    <el-dialog title="工程详情" :visible.sync='projectDetailShow' :close-on-click-modal="false">
+      <ProjectDetail />
+    </el-dialog>
     <!-- 数据详情对话框 -->
     <DataDetail
       :visible="Detail.detail"
@@ -136,22 +141,8 @@
 </template>
 
 <script>
-import {
-  getAllProject,
-  apiEditProjectInfo,
-  apiGetDataDetail,
-  delProject,
-  apiAddProject,
-  getDataTrend,
-  apiGetSpareUrl,
-  delJournakApi
-} from "@/api/project";
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
+import { getAllProject, apiEditProjectInfo, apiGetDataDetail, delProject, apiAddProject, getDataTrend, apiGetSpareUrl, delJournakApi } from "@/api/project";
+import { apidRunImmediately, apidCancleRunning, apiAddScheduler, apiCancelScheduler } from "@/api/scheduler";
 import { apiGetTmpl } from "@/api/templates";
 import { apiOriginalLog } from "@/api/originalLog";
 import EditBaseInfo from "./components/EditBaseInfo";
@@ -162,6 +153,7 @@ import Toolbar from "./components/Toolbar";
 import DataTrend from "./components/DataTrend";
 import AddField from "./components/AddField";
 import DataDetail from "./components/DataDetail";
+import ProjectDetail from "./components/ProjectDetail";
 import deepcopy from 'deepcopy';
 
 export default {
@@ -174,7 +166,8 @@ export default {
     Toolbar,
     DataTrend,
     AddField,
-    DataDetail
+    DataDetail,
+    ProjectDetail
   },
   data() {
     return {
@@ -221,12 +214,10 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null
+      fieldToAddId: null,
+      projectDetailShow: false
     };
   },
-  // created() {
-  //   this.listTemplate();
-  // },
   mounted() {
     this.init();
   },
@@ -247,6 +238,9 @@ export default {
     }
   },
   methods: {
+    bump(){
+      this.projectDetailShow = true
+    },
     // 处理日志详情
     async handleJournal() {
       var params = {
