@@ -16,7 +16,9 @@
       style="width: 100%"
     >
       <el-table-column label="序号" width="50" type="index" align="center"></el-table-column>
-      <el-table-column label="名称" prop="project_name_zh"></el-table-column>
+      <el-table-column label="名称" prop="project_name_zh">
+        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" > {{ scope.row.project_name_zh }}</a></template>
+      </el-table-column>
       <el-table-column label="分类">
         <template
           slot-scope="scope"

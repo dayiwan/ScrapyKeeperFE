@@ -87,5 +87,18 @@ export const asyncRouterMap = [{
                 import ('@/views/ProxyIp/ProxyIp'),
             meta: { title: 'IP代理', icon: 'ip', roles: ['leader'] }
         }]
-    }
+    },
+    {
+        path: '/project',
+        component: Layout,
+        hidden: true,
+        children: [{
+            path: ':project_name',
+            name: 'info',
+            component: () =>
+                import ('@/views/Project/components/ProjectInfo'),
+            meta: { title: 'peizhi', icon: 'ip', roles: ['leader'] },
+           
+        }]
+    },
 ]
