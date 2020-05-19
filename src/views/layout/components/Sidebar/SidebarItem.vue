@@ -1,13 +1,10 @@
 <template>
   <div>
-    <div style="height:60px; color: #ffffff; font-size: 14px; line-height:60px;">
-      <img
-        src="../../../../assets/cetclogo.png"
-        style="display:inline-block; width: 50px; margin: -1px 4px;"
-      />
-      <strong style="font-family: '微软雅黑'; font-size:16px;">互联网数据采集平台</strong>
+    <div class="slide-bar-header">
+      <img src="../../../../assets/logo.png">
+      <strong>互联网数据采集平台</strong>
     </div>
-    <el-menu :defaultOpeneds="['/project', '/machine']" :default-active="$route.path">
+    <el-menu :defaultOpeneds="['/project']" :default-active="defautActive">
       <div v-for="(item, index) in routes" :key="index">
         <template v-if="!item.hidden&&item.children">
           <router-link
@@ -70,6 +67,16 @@ export default {
       default: false
     }
   },
+  computed: {
+    defautActive: function() {
+      const path = this.$route.path;
+      if (path.indexOf('/project') > -1) {
+        return '/project'
+      } else {
+        return this.$route.path;
+      }
+    }
+  },
   methods: {
     hasOneShowingChildren(children) {
       const showingChildren = children.filter(item => {
@@ -83,3 +90,20 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.slide-bar-header {
+  @include flex();
+  height: 50px;
+  
+  img {
+    height: 30px;
+  }
+  strong {
+    display: block;
+    font-size: 18px;
+    color: white;
+    margin-left: 5px;
+  }
+}
+</style>

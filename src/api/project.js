@@ -1,4 +1,4 @@
-import { request } from '@/api/init.js'
+import { request, requestMultipart } from '@/api/init.js'
 const querystring = require('querystring')
 
 export function getAllProject(form) {
@@ -40,6 +40,20 @@ export function apiAddProject(form) {
             url: '/project',
             method: 'post',
             data: querystring.stringify(form)
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
+    })
+}
+
+export function apiUploadProject(form) {
+    return new Promise((resolve, reject) => {
+        requestMultipart({
+            url: '/project',
+            method: 'post',
+            data: form
         }).then((res) => {
             resolve(res)
         }).catch((e) => {

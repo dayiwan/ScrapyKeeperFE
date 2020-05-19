@@ -2,19 +2,21 @@
   <div class="machine-detail">
     <div class="node_info">服务器名称：{{ detailForm.node_name }}</div>
     <div class="detail">
-      <div class="name">节点任务概览
+      <div class="name">资源使用情况</div>
+      <div class="content">
+        <StatisCard :data="detailForm.cpu" :color="colors[0]" />
+        <StatisCard :data="detailForm.memory" :color="colors[1]" />
+        <StatisCard :data="detailForm.disk" :color="colors[2]" />
+        <StatisCard :data="detailForm.network" :color="colors[3]" />
+      </div>
+    </div>
+
+    <div class="detail">
+      <div class="name">
+        节点任务概览
         <div class="content">
           <InfoCard v-for="(item, index) in detailForm.info" :key="index" :data="item" />
         </div>
-      </div>
-    </div>
-    <div class="detail">
-      <div class="name">资源使用情况</div>
-      <div class="content">
-          <StatisCard :data="detailForm.cpu" :color="colors[0]" />
-          <StatisCard :data="detailForm.memory" :color="colors[1]"/>
-          <StatisCard :data="detailForm.disk" :color="colors[2]"/>
-          <StatisCard :data="detailForm.network" :color="colors[3]" />
       </div>
     </div>
   </div>
@@ -22,7 +24,7 @@
 
 <script>
 import StatisCard from "./MachineStatisCard.vue";
-import InfoCard from "./InfoCard.vue"
+import InfoCard from "./InfoCard.vue";
 export default {
   components: { StatisCard, InfoCard },
   props: {
@@ -32,8 +34,8 @@ export default {
   },
   data() {
     return {
-      colors: ['#409EFF', "#67C23A", "#303133", "#909399"]
-    }
+      colors: ["#409EFF", "#67C23A", "#303133", "#909399"]
+    };
   }
 };
 </script>

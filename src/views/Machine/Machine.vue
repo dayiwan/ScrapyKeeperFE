@@ -39,7 +39,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button id="add_server" type="primary" @click="dialogShow = true; handler.type='ADD'">添加服务器</el-button>
+    <el-button id="add_server" size="small" plain @click="dialogShow = true; handler.type='ADD'">+添加服务器</el-button>
 
     <!-- 添加服务器弹框  -->
     <el-dialog title="添加服务器" :visible.sync="dialogShow">
@@ -221,7 +221,7 @@ export default {
         await this.apiMachine.delete({ id })
         this.$message.success("删除成功");
         await this.listMachine();
-      });
+      }).catch(() => {});
     },
     onMachineFormConfirm: function() {
       const _form = this.$deepcopy(this.machineForm);

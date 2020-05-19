@@ -1,7 +1,9 @@
 <template>
   <div class="template-card">
-    <h4>{{ name }}</h4>
-    <img :src="imgSrc" />
+    <div class="template-card-body" @click="cardClick">
+      <h4>{{ name }}</h4>
+      <img :src="imgSrc" />
+    </div>
 
     <i class="el-icon-delete del-icon" @click="delTemplate"></i>
   </div>
@@ -15,8 +17,11 @@ export default {
     imgSrc: { type: String }
   },
   methods: {
-    delTemplate() {
+    delTemplate(event) {
       this.$emit("del", this.id);
+    },
+    cardClick(event) {
+      this.$emit("click");
     }
   }
 };
@@ -24,34 +29,10 @@ export default {
 
 <style lang="scss">
 .template-card {
-  @include flex(column);
-  @include shadow-card();
-
   width: 200px;
   height: 200px;
-  padding: 5px;
   cursor: pointer;
   position: relative;
-
-  h4 {
-    margin-top: 0;
-  }
-
-  img {
-    width: 100px;
-    height: 100px;
-  }
-
-  .del-icon {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-weight: bolder;
-    color: #ff3d3d;
-    font-size: 18px;
-    z-index: 99;
-    opacity: 0;
-  }
 
   &::before {
     content: "";
@@ -92,6 +73,33 @@ export default {
     }
     .del-icon {
       opacity: 1;
+    }
+  }
+
+  .del-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-weight: bolder;
+    color: #ff3d3d;
+    font-size: 18px;
+    z-index: 99;
+    opacity: 0;
+  }
+
+  &-body {
+    @include flex(column);
+    @include shadow-card();
+    width: 100%;
+    height: 100%;
+
+    h4 {
+      margin-top: 0;
+    }
+
+    img {
+      width: 100px;
+      height: 100px;
     }
   }
 }

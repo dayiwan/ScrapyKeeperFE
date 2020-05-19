@@ -2,12 +2,16 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 const querystring = require('querystring')
 
-const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.3:5060' : ''
+const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.22:5060' : ''
 
 
 const handelSuccess = response => {
     if (response.data.status !== 'ok') {
-        Message.error({ message: response.message })
+        Message.error({
+            message: response.message,
+            showClose: true,
+            duration: 0
+        })
         return
     } else {
         return response.data.data
@@ -17,11 +21,16 @@ const handelSuccess = response => {
 const handleError = error => {
     if (error.response && error.response.data && error.response.data.message) {
         Message.error({
-            message: error.response.data.message
+            message: error.response.data.message,
+            showClose: true,
+            duration: 0
         })
     } else {
+
         Message.error({
-            message: error
+            message: error,
+            showClose: true,
+            duration: 0
         })
     }
     console.error('ERROR ' + error) // for debug
@@ -32,7 +41,7 @@ const handleError = error => {
 // 创建axios实例
 const request = axios.create({
     baseURL: baseURL,
-    timeout: 95000, // 请求超时时间
+    timeout: 120000, // 请求超时时间
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
     withCredentials: true // 跨域session
 })
@@ -45,7 +54,7 @@ request.interceptors.response.use(
 
 const requestMultipart = axios.create({
     baseURL: baseURL, // api的base_url
-    timeout: 15000, // 请求超时时间
+    timeout: 120000, // 请求超时时间
     headers: { 'Content-Type': 'multipart/form-data' }
 })
 

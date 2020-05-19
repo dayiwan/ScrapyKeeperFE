@@ -64,7 +64,6 @@
 
 <script>
 import { apiParseTmpl } from "@/api/templates";
-import deepcopy from "deepcopy"
 export default {
   props: {
     tplInput: { type: String, default: "{}" },
@@ -142,7 +141,7 @@ export default {
     },
     onConfirm() {
       if (this.validate()) {
-        let _form = deepcopy(this.form)
+        let _form = this.$deepcopy(this.form)
         _form.tpl_input = JSON.stringify(_form.tpl_input)
         this.$emit("confirm", _form);
       }
@@ -159,6 +158,11 @@ export default {
     .el-upload {
       margin-right: 50px;
     }
+  }
+
+  .tpl-img {
+    width: 65px;
+    height: 65px;
   }
 
   .tpl-info {

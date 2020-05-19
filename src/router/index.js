@@ -34,6 +34,30 @@ export const asyncRouterMap = [{
         }]
     },
     {
+        path: '/project',
+        component: Layout,
+        hidden: true,
+        children: [{
+            path: ':project_name',
+            name: 'info',
+            component: () =>
+                import ('@/views/ProjectInfo/ProjectInfo'),
+            meta: { title: '项目详情', icon: 'ip', roles: ['leader'] },
+
+        }]
+    },
+    {
+        path: '',
+        component: Layout,
+        children: [{
+            path: 'createProject',
+            name: 'createProject',
+            component: () =>
+                import ('@/views/CreateProject/CreateProject'),
+            meta: { title: '创建工程', icon: 'add_project', roles: ['leader'] }
+        }]
+    },
+    {
         path: '',
         component: Layout,
         children: [{
