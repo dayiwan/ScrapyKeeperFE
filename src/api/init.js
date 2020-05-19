@@ -72,9 +72,13 @@ class BaseRequest {
     }
 
 
-    get(param) {
+    get(params) {
         return new Promise((resolve, reject) => {
-            request.get(this.url, param).then((res) => {
+            request({
+                url: this.url,
+                params: params,
+                method: 'get'
+            }).then((res) => {
                 resolve(res)
             }).catch((e) => {
                 reject(e)

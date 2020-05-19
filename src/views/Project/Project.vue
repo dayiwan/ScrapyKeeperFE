@@ -85,7 +85,6 @@
       ></el-pagination>
     </div>
 
-
     <!-- 数据详情对话框 -->
     <DataDetail
       :visible="Detail.detail"
@@ -225,12 +224,9 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null
+      fieldToAddId: null,
     };
   },
-  // created() {
-  //   this.listTemplate();
-  // },
   mounted() {
     this.init();
   },

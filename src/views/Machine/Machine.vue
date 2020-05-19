@@ -25,7 +25,10 @@
       </el-table-column>
       <el-table-column align="center" label="状态" width="155">
         <template slot-scope="scope">
-          <span style="font-weight: 700;" v-if="scope.row.status == 1">可用</span>
+          <span style="font-weight: 700;" v-if="scope.row.status == 1">
+            可用
+            <el-button type="text" style="padding-left: 10px" @click="watchDetail(scope.row.url)">查看详情</el-button>
+          </span>
           <span style="color: #999999;" v-else>不可用</span>
         </template>
       </el-table-column>
@@ -38,6 +41,7 @@
     </el-table>
     <el-button id="add_server" size="small" plain @click="dialogShow = true; handler.type='ADD'">+添加服务器</el-button>
 
+    <!-- 添加服务器弹框  -->
     <el-dialog title="添加服务器" :visible.sync="dialogShow">
       <machineForm
         :url.sync="machineForm.url"
@@ -45,6 +49,11 @@
         :status.sync="machineForm.status"
         @confirm="onMachineFormConfirm"
       />
+    </el-dialog>
+
+    <!-- 查看服务器节点详情弹框 -->
+    <el-dialog title="节点详情" :visible.sync="dialogDetailShow">
+      <machineDetail :detailForm="detailForm" />
     </el-dialog>
   </div>
 </template>
@@ -56,17 +65,14 @@
 </style>
 
 <script>
-import {
-  apiListMachine,
-  apiAddmachine,
-  apiDelMachine,
-  apiEditMachine
-} from "@/api/machine";
+import apiMachine from '@/api/machine'
 import machineForm from "./components/MachineForm";
+import machineDetail from "./components/MachineDetail"
 export default {
-  components: { machineForm },
+  components: { machineForm, machineDetail },
   data() {
     return {
+      detailForm: {},
       list: [],
       machineForm: {
         url: "",
@@ -79,7 +85,9 @@ export default {
         id: null
       },
       loading: false,
-      dialogShow: false
+      dialogShow: false,
+      dialogDetailShow: false,
+      apiMachine
     };
   },
   created() {
@@ -87,8 +95,73 @@ export default {
   },
   mounted() {},
   methods: {
+    //查看服务器节点详情
+    async watchDetail(ip) {
+      this.loading = true
+      try {
+        const rawdata = await apiMachine.get({url: ip})
+        const data = {
+          cpu: [
+            {
+              name: 'CPU使用率：',
+              value: rawdata.cpu.percent
+            }
+          ],
+          memory: [
+            {
+              name: '内存使用率：',
+              value: rawdata.memory.percent
+            },
+            {
+              name: '内存总量：',
+              value: rawdata.memory.total
+            }
+          ],
+          disk: [
+            {
+              name: '硬盘使用率：',
+              value: rawdata.disk.percent
+            },
+            {
+              name: '硬盘总量：',
+              value: rawdata.disk.total
+            }
+          ],
+          network: [
+            {
+              name: '带宽上传量：',
+              value: rawdata.network.send
+            },
+            {
+              name: '带宽下载量：',
+              value: rawdata.network.receive
+            }
+          ],
+          info: [
+            {
+              name: '运行中：',
+              value: rawdata.running
+            },
+            {
+              name: '休眠中：',
+              value: rawdata.pending
+            },
+            {
+              name: '已完成：',
+              value: rawdata.finished
+            }
+          ],
+          node_name: rawdata.node_name,
+        }
+        this.dialogDetailShow = true
+        this.detailForm = data
+      } catch(e) {
+        this.$$message.error("获取详情失败" + e)
+      }
+      this.loading = false
+    },
     onEditBtnClick(row) {
-      this.handler.type = "EDIT"
+      this.handler.type = "EDIT";
       this.handler.id = row.id;
       this.machineForm.url = row.url;
       this.machineForm.status = row.status;
@@ -101,7 +174,7 @@ export default {
     async listMachine() {
       this.loading = true;
       try {
-        const res = await apiListMachine();
+        const res = await this.apiMachine.get();
         this.list = [];
         for (const machRes of res) {
           this.list.push(machRes);
@@ -117,7 +190,7 @@ export default {
       this.dialogShow = false;
       this.loading = true;
       try {
-        await apiAddmachine(form);
+        await this.apiMachine.post(form);
         await this.listMachine();
         const res = this.$message.success("添加成功");
       } finally {
@@ -130,11 +203,11 @@ export default {
       this.loading = true;
       this.dialogShow = false;
       try {
-        await apiEditMachine(form);
+        await this.apiMachine.put(form);
         await this.listMachine();
         this.$message.success("操作成功");
       } finally {
-         this.loading = false;
+        this.loading = false;
       }
     },
 
@@ -145,7 +218,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
-        await apiDelMachine(id);
+        await this.apiMachine.delete({ id })
         this.$message.success("删除成功");
         await this.listMachine();
       }).catch(() => {});
@@ -155,8 +228,8 @@ export default {
       if (this.handler.type == "ADD") {
         this.addMachine(_form);
       } else if (this.handler.type == "EDIT") {
-        _form.id = this.handler.id
-        this.editMachine(_form)
+        _form.id = this.handler.id;
+        this.editMachine(_form);
       } else {
         this.$message.error("错误的操作类型！");
       }
@@ -164,3 +237,4 @@ export default {
   }
 };
 </script>
+
