@@ -17,37 +17,16 @@
     >
       <el-table-column label="序号" width="50" type="index" align="center"></el-table-column>
       <el-table-column label="名称" prop="project_name_zh">
-        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" > {{ scope.row.project_name_zh }}</a></template>
+        <template slot-scope="scope">{{ scope.row.project_name_zh }}</template>
       </el-table-column>
       <el-table-column label="分类">
         <template
           slot-scope="scope"
         >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}</template>
       </el-table-column>
-      <el-table-column label="周期" prop="time"></el-table-column>
       <el-table-column label="发布时间" prop="date_created"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">{{ scope.row.status | statusMapping }}</template>
-      </el-table-column>
-      <el-table-column align="center" width="200" label="操作">
-        <template slot-scope="scope">
-          <el-button
-            v-show="scope.row.category !== 'news'"
-            type="text"
-            @click="addFieldClick(scope.row)"
-          >添加参数</el-button>
-          <el-dropdown placement="bottom" trigger="click">
-            <span class="el-dropdown-link">调度</span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="a" @click.native="runImmediately(scope.row.id)">立即运行</el-dropdown-item>
-              <el-dropdown-item command="b" @click.native="cancleRunning(scope.row.id)">取消运行</el-dropdown-item>
-              <el-dropdown-item command="c" @click.native="schedulerClick(scope.row)">周期调度</el-dropdown-item>
-              <el-dropdown-item command="d" @click.native="cancelScheduler(scope.row.id)">取消调度</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <!-- <el-button type="text" @click="editeClick(scope.row)">编辑</el-button> -->
-          <el-button type="text" style="color: red" @click="del_project(scope.row)">删除</el-button>
-        </template>
       </el-table-column>
 
       <el-table-column align="center" label="待采队列">
@@ -62,17 +41,27 @@
           <el-button type="text" @click="dataDetail(scope.row)">查看</el-button>
         </template>
       </el-table-column>
+
       <el-table-column align="center" label="数据趋势图">
         <template slot-scope="scope">
           <el-button type="text" @click="dataTrendClick(scope.row.project_name_zh)">查看</el-button>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="日志">
+
+      <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
           <span class="error-info" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
-          <el-button type="text" @click="ViewLogClick(scope.row)">日志详情</el-button>
         </template>
       </el-table-column>
+
+       <el-table-column align="center" label="项目配置 / 任务">
+        <template slot-scope="scope">
+          <router-link :to="`/project/${scope.row.project_name}`">
+            <el-button type="text">查看详情</el-button>
+          </router-link>
+        </template>
+      </el-table-column>
+
     </el-table>
 
     <div class="pagination">
