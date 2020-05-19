@@ -36,7 +36,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button id="add_server" type="primary" @click="dialogShow = true; handler.type='ADD'">添加服务器</el-button>
+    <el-button id="add_server" size="small" plain @click="dialogShow = true; handler.type='ADD'">+添加服务器</el-button>
 
     <el-dialog title="添加服务器" :visible.sync="dialogShow">
       <machineForm
