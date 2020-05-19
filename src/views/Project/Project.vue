@@ -225,7 +225,6 @@ export default {
       tpl_input: null,
       fieldToAdd: {},
       fieldToAddId: null,
-      projectDetailShow: false
     };
   },
   mounted() {
@@ -248,9 +247,6 @@ export default {
     }
   },
   methods: {
-    bump(){
-      this.projectDetailShow = true
-    },
     // 处理日志详情
     async handleJournal() {
       var params = {
