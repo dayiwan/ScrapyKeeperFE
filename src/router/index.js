@@ -30,7 +30,20 @@ export const asyncRouterMap = [{
             name: 'project',
             component: () =>
                 import ('@/views/Project/Project.vue'),
-            meta: { title: '项目管理', icon: 'list', roles: ['leader'] }
+            meta: { title: '项目管理', icon: 'list', roles: ['leader'] },
+        }]
+    },
+    {
+        path: '/project',
+        component: Layout,
+        hidden: true,
+        children: [{
+            path: ':project_name',
+            name: 'info',
+            component: () =>
+                import ('@/views/ProjectInfo/ProjectInfo'),
+            meta: { title: '项目详情', icon: 'ip', roles: ['leader'] },
+
         }]
     },
     {
@@ -87,18 +100,5 @@ export const asyncRouterMap = [{
                 import ('@/views/ProxyIp/ProxyIp'),
             meta: { title: 'IP代理', icon: 'ip', roles: ['leader'] }
         }]
-    },
-    {
-        path: '/project',
-        component: Layout,
-        hidden: true,
-        children: [{
-            path: ':project_name',
-            name: 'info',
-            component: () =>
-                import ('@/views/Project/components/ProjectInfo'),
-            meta: { title: 'peizhi', icon: 'ip', roles: ['leader'] },
-           
-        }]
-    },
+    }
 ]

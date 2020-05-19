@@ -4,7 +4,7 @@
       <img src="../../../../assets/logo.png">
       <strong>互联网数据采集平台</strong>
     </div>
-    <el-menu :defaultOpeneds="['/project', '/machine']" :default-active="$route.path">
+    <el-menu :defaultOpeneds="['/project']" :default-active="defautActive">
       <div v-for="(item, index) in routes" :key="index">
         <template v-if="!item.hidden&&item.children">
           <router-link
@@ -65,6 +65,16 @@ export default {
     isNest: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    defautActive: function() {
+      const path = this.$route.path;
+      if (path.indexOf('/project') > -1) {
+        return '/project'
+      } else {
+        return this.$route.path;
+      }
     }
   },
   methods: {
