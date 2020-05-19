@@ -53,11 +53,6 @@ export default {
   components: { TemplateEditForm, TemplateCard, TemplateForm },
   data() {
     return {
-      modelMap: new Map([
-        ["news", "通用型新闻网页"],
-        ["weibo", "新浪微博"],
-        ["gongzhonghao", "微信公众号"]
-      ]),
       tplArr: [],
       editForm: {
         id: null,
