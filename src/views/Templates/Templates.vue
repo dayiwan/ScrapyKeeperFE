@@ -24,25 +24,9 @@
 </template>
 
 <script>
-import {
-  getAllProject,
-  apiEditProjectInfo,
-  delProject,
-  apiAddProject
-} from "@/api/project";
-import {
-  apiAddTmpl,
-  apiGetTmpl,
-  delTmpl,
-  apiEditTmpl,
-  apiDelTmpl
-} from "@/api/templates";
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
+import { getAllProject, apiEditProjectInfo, delProject, apiAddProject } from "@/api/project";
+import { apiAddTmpl} from "@/api/templateAdd"
+import apiTemplate from "@/api/templates";
 import { apiOriginalLog } from "@/api/originalLog";
 import TemplateEditForm from "./components/TemplateEditForm";
 import TemplateCard from "./components/TemplateCard";
@@ -53,6 +37,7 @@ export default {
   components: { TemplateEditForm, TemplateCard, TemplateForm },
   data() {
     return {
+      apiTemplate,
       tplArr: [],
       editForm: {
         id: null,
@@ -81,15 +66,9 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(255, 255, 255, 0.9)"
       });
-      const data = await apiGetTmpl();
+      const data = await this.apiTemplate.get();
       this.tplArr = data;
       loading.close();
-    },
-    // 删除
-    async del_project(id) {
-      await delTmpl(id);
-      this.listTmpl();
-      this.$message.success("删除成功！");
     },
 
     async onTmplFormConfirm(form) {
@@ -121,7 +100,7 @@ export default {
             spinner: "el-icon-loading"
           });
           try {
-            await apiDelTmpl(id);
+            await this.apiTemplate.delete(id);
           } finally {
             this.listTmpl();
             loading.close();
@@ -143,7 +122,7 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        await apiEditTmpl(form);
+        await this.apiTemplate.put(form);
         this.$message.success("操作成功");
       } finally {
         this.listTmpl();

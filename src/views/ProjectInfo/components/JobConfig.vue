@@ -470,17 +470,13 @@
 </template>
 
 <script>
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
+import apiScheduler from "@/api/scheduler";
 
 export default {
   props: ["project_name"],
   data() {
     return {
+      apiScheduler,
       activeName: "启停策略",
       ip_proxy_option: ["所有请求", "随机"],
       seed_form: {
@@ -624,7 +620,7 @@ export default {
         project_name: this.project_name,
         config: JSON.stringify(form)
       };
-      const res = await apiAddScheduler(params);
+      const res = await this.apiScheduler.post(params);
     },
     seed_form_add() {
       this.seed_form.domains.push({

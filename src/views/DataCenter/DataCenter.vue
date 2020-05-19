@@ -110,7 +110,7 @@ import DataOverview from "./components/DataOverview/DataOverview";
 import ProjectData from "./components/ProjectData/ProjectData";
 import AllData from "./components/AllData/AllData";
 
-import { apiGetStatus, apiGetProjectWeekData } from "@/api/dataCentral";
+import apiDataCentral from "@/api/dataCentral";
 import { getDataTrend } from "@/api/project";
 import apiEmail from "@/api/email";
 
@@ -122,6 +122,7 @@ export default {
   },
   data() {
     return {
+      apiDataCentral,
       num: 0,
       totalSize: 0,
       fileSize: 0,
@@ -203,7 +204,7 @@ export default {
       }
     },
     async getProjectWeekData() {
-      var res = await apiGetProjectWeekData();
+      var res = await this.apiDataCentral.post();
       this.flag = true;
       var options = [];
       for (var j = 0, len = res.xAxis.length; j < len; j++) {
@@ -219,7 +220,6 @@ export default {
     },
     async listEmail() {
       this.emailArr = await this.apiEmail.get();
-      console.log(this.emailArr);
     },
 
     async addEmail() {

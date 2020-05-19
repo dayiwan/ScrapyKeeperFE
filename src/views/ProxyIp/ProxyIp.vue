@@ -58,12 +58,7 @@
 </style>
 
 <script>
-import {
-  apiDelAgency,
-  apiAddAgency,
-  apiListAgency,
-  apiEditAgency
-} from "@/api/proxyIp";
+import apiProxyIp from "@/api/proxyIp";
 import ProxyIpForm from "./components/ProxyIpForm";
 export default {
   components: { ProxyIpForm },
@@ -86,7 +81,8 @@ export default {
         headers: [],
         body: []
       },
-      loading: false
+      loading: false,
+      apiProxyIp
     };
   },
   mounted() {
@@ -97,7 +93,7 @@ export default {
     async listAgency() {
       this.loading = true;
       try {
-        const data = await apiListAgency();
+        const data = await this.apiProxyIp.get();
         this.agentData = data;
       } finally {
         this.loading = false;
@@ -121,9 +117,9 @@ export default {
       this.loading = true;
       try {
         if (this.hanlder.type == "ADD") {
-          await apiAddAgency(form);
+          await this.apiProxyIp.post(form);
         } else {
-          await apiEditAgency(form);
+          await this.apiProxyIp.put(form);
         }
         await this.listAgency();
         this.$message.success("操作成功");
@@ -139,7 +135,7 @@ export default {
       }).then(async () => {
         try {
           this.loading = true;
-          await apiDelAgency(id);
+          await this.apiProxyIp.delete(id);
           this.$message.success("删除成功");
         } finally {
           await this.listAgency();

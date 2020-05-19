@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { apiParseTmpl } from "@/api/templates";
+import { apiParseTmpl } from "@/api/templateAdd";
 export default {
   props: {
     tplInput: { type: String, default: "{}" },

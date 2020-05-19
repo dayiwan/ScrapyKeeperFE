@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { apiParseTmpl } from "@/api/templates";
+import { apiParseTmpl } from "@/api/templateAdd";
 import deepcopy from "deepcopy";
 export default {
   props: {
