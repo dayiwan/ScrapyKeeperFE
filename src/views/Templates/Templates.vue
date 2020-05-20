@@ -30,20 +30,7 @@ import {
   delProject,
   apiAddProject
 } from "@/api/project";
-import {
-  apiAddTmpl,
-  apiGetTmpl,
-  delTmpl,
-  apiEditTmpl,
-  apiDelTmpl
-} from "@/api/templates";
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
-import { apiOriginalLog } from "@/api/originalLog";
+import { apiTemplate } from "@/api";
 import TemplateEditForm from "./components/TemplateEditForm";
 import TemplateCard from "./components/TemplateCard";
 import TemplateForm from "./components/TemplateForm";
@@ -81,15 +68,9 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(255, 255, 255, 0.9)"
       });
-      const data = await apiGetTmpl();
+      const data = await apiTemplate.get();
       this.tplArr = data;
       loading.close();
-    },
-    // 删除
-    async del_project(id) {
-      await delTmpl(id);
-      this.listTmpl();
-      this.$message.success("删除成功！");
     },
 
     async onTmplFormConfirm(form) {
@@ -99,7 +80,16 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        const res = await apiAddTmpl(form);
+        const formData = new FormData();
+        for (let key in form) {
+          if (form[key] instanceof File) {
+            formData.append(key, null);
+            formData.set(key, form[key]);
+          } else {
+            formData.append(key, form[key]);
+          }
+        }
+        const res = await apiTemplate.add(formData);
         await this.listTmpl();
         this.$message.success("添加成功！");
       } catch (e) {
@@ -121,7 +111,7 @@ export default {
             spinner: "el-icon-loading"
           });
           try {
-            await apiDelTmpl(id);
+            await apiTemplate.delete({ id });
           } finally {
             this.listTmpl();
             loading.close();
@@ -143,7 +133,7 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        await apiEditTmpl(form);
+        await apiTemplate.put(form);
         this.$message.success("操作成功");
       } finally {
         this.listTmpl();

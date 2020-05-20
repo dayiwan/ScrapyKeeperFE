@@ -470,12 +470,7 @@
 </template>
 
 <script>
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
+import { apiScheduler } from "@/api";
 
 export default {
   props: ["project_name"],
@@ -624,7 +619,7 @@ export default {
         project_name: this.project_name,
         config: JSON.stringify(form)
       };
-      const res = await apiAddScheduler(params);
+      const res = await apiScheduler.post(params);
     },
     seed_form_add() {
       this.seed_form.domains.push({
