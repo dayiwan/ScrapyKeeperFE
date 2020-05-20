@@ -138,7 +138,6 @@ export default {
   }
   .task-box {
     border: 1px solid rgb(218, 215, 215);
-    height: 500px;
     margin-top: 20px;
     .title {
       text-align: center;
@@ -148,7 +147,6 @@ export default {
     .content {
       margin: 0 10px;
       overflow-y: auto;
-      height: 500px;
     }
   }
 }
