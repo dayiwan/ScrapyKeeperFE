@@ -24,10 +24,13 @@
 </template>
 
 <script>
-import { getAllProject, apiEditProjectInfo, delProject, apiAddProject } from "@/api/project";
-import { apiAddTmpl} from "@/api/templateAdd"
-import apiTemplate from "@/api/templates";
-import { apiOriginalLog } from "@/api/originalLog";
+import {
+  getAllProject,
+  apiEditProjectInfo,
+  delProject,
+  apiAddProject
+} from "@/api/project";
+import { apiTemplate } from "@/api";
 import TemplateEditForm from "./components/TemplateEditForm";
 import TemplateCard from "./components/TemplateCard";
 import TemplateForm from "./components/TemplateForm";
@@ -37,7 +40,6 @@ export default {
   components: { TemplateEditForm, TemplateCard, TemplateForm },
   data() {
     return {
-      apiTemplate,
       tplArr: [],
       editForm: {
         id: null,
@@ -66,7 +68,7 @@ export default {
         spinner: "el-icon-loading",
         background: "rgba(255, 255, 255, 0.9)"
       });
-      const data = await this.apiTemplate.get();
+      const data = await apiTemplate.get();
       this.tplArr = data;
       loading.close();
     },
@@ -78,7 +80,16 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        const res = await apiAddTmpl(form);
+        const formData = new FormData();
+        for (let key in form) {
+          if (form[key] instanceof File) {
+            formData.append(key, null);
+            formData.set(key, form[key]);
+          } else {
+            formData.append(key, form[key]);
+          }
+        }
+        const res = await apiTemplate.add(formData);
         await this.listTmpl();
         this.$message.success("添加成功！");
       } catch (e) {
@@ -100,7 +111,7 @@ export default {
             spinner: "el-icon-loading"
           });
           try {
-            await this.apiTemplate.delete(id);
+            await apiTemplate.delete({ id });
           } finally {
             this.listTmpl();
             loading.close();
@@ -122,7 +133,7 @@ export default {
         spinner: "el-icon-loading"
       });
       try {
-        await this.apiTemplate.put(form);
+        await apiTemplate.put(form);
         this.$message.success("操作成功");
       } finally {
         this.listTmpl();

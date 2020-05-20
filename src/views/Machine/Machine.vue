@@ -65,7 +65,7 @@
 </style>
 
 <script>
-import apiMachine from '@/api/machine'
+import { apiMachine } from '@/api'
 import machineForm from "./components/MachineForm";
 import machineDetail from "./components/MachineDetail"
 export default {
@@ -86,8 +86,7 @@ export default {
       },
       loading: false,
       dialogShow: false,
-      dialogDetailShow: false,
-      apiMachine
+      dialogDetailShow: false
     };
   },
   created() {
@@ -174,7 +173,7 @@ export default {
     async listMachine() {
       this.loading = true;
       try {
-        const res = await this.apiMachine.get();
+        const res = await apiMachine.get();
         this.list = [];
         for (const machRes of res) {
           this.list.push(machRes);
@@ -190,7 +189,7 @@ export default {
       this.dialogShow = false;
       this.loading = true;
       try {
-        await this.apiMachine.post(form);
+        await apiMachine.post(form);
         await this.listMachine();
         const res = this.$message.success("添加成功");
       } finally {
@@ -203,7 +202,7 @@ export default {
       this.loading = true;
       this.dialogShow = false;
       try {
-        await this.apiMachine.put(form);
+        await apiMachine.put(form);
         await this.listMachine();
         this.$message.success("操作成功");
       } finally {
@@ -218,7 +217,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
-        await this.apiMachine.delete({ id })
+        await apiMachine.delete({ id })
         this.$message.success("删除成功");
         await this.listMachine();
       }).catch(() => {});

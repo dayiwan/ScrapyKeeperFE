@@ -53,17 +53,22 @@
         <div class="tpl-input">
           <div class="tpl-input-row" v-for="(inputItem, k) in form.tpl_input" :key="k">
             <span class="tpl-input-row-title">{{ inputItem.tip }} （{{ k }}）</span>
-            默认值：<el-input size="small" style="width: 250px;" v-model="inputItem.value"></el-input>
+            默认值：
+            <el-input size="small" style="width: 250px;" v-model="inputItem.value"></el-input>
           </div>
         </div>
       </section>
     </div>
-    <el-button @click="onConfirm"  v-show="form.tpl_zip !== null" style="width: 100%; margin-top: 15px;">提 交</el-button>
+    <el-button
+      @click="onConfirm"
+      v-show="form.tpl_zip !== null"
+      style="width: 100%; margin-top: 15px;"
+    >提 交</el-button>
   </div>
 </template>
 
 <script>
-import { apiParseTmpl } from "@/api/templateAdd";
+import { apiTemplate } from "@/api";
 export default {
   props: {
     tplInput: { type: String, default: "{}" },
@@ -113,7 +118,10 @@ export default {
     async chgZip(file, fileList) {
       const rawFile = file.raw;
       this.zipList = fileList;
-      const data = await apiParseTmpl(rawFile);
+      const formData = new FormData();
+      formData.append("tpl_zip", null);
+      formData.set("tpl_zip", rawFile);
+      const data = await apiTemplate.parse(formData);
       this.form.tpl_zip = rawFile;
       this.form.tpl_name = data.name;
       this.form.tpl_zh = data.name_zh;
@@ -141,8 +149,8 @@ export default {
     },
     onConfirm() {
       if (this.validate()) {
-        let _form = this.$deepcopy(this.form)
-        _form.tpl_input = JSON.stringify(_form.tpl_input)
+        let _form = this.$deepcopy(this.form);
+        _form.tpl_input = JSON.stringify(_form.tpl_input);
         this.$emit("confirm", _form);
       }
     }

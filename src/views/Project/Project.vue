@@ -138,9 +138,7 @@ import {
   delJournakApi,
   apiUploadProject
 } from "@/api/project";
-import apiScheduler from "@/api/scheduler";
-import apiTemplate from "@/api/templates";
-import { apiOriginalLog } from "@/api/originalLog";
+import { apiScheduler, apiOriginalLog, apiTemplate } from "@/api";
 import EditBaseInfo from "./components/EditBaseInfo";
 import AddProjectDialog from "./components/AddProjectDialog";
 import SchedulerDialog from "./components/SchedulerDialog";
@@ -164,7 +162,6 @@ export default {
   },
   data() {
     return {
-      apiTemplate,
       addProjShow: true,
       query: {
         category: "",
@@ -209,8 +206,7 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null,
-      apiScheduler
+      fieldToAddId: null
     };
   },
   mounted() {
@@ -280,7 +276,7 @@ export default {
       this.dialog = true;
       this.title = "日志详情";
       this.journalName = form.project_name;
-      const res = await apiOriginalLog(form.id);
+      const res = await apiOriginalLog.get(form.id);
       this.logList = res;
       this.listLoading = false;
     },
@@ -395,7 +391,7 @@ export default {
     },
     // 获取模板列表,将模板列表传入筛选组件和categoryMap,
     async init() {
-      const data = await this.apiTemplate.get();
+      const data = await apiTemplate.get();
       this.tplList = data;
       for (let item of this.tplList) {
         var item_obj = {};
@@ -496,13 +492,13 @@ export default {
         id: id,
         run_type: "onetime"
       };
-      await this.apiScheduler.get(params);
+      await apiScheduler.get(params);
       this.$message.success("调度成功！");
       this.listProject();
     },
     // 取消运行事件
     async cancleRunning(id) {
-      await this.apiScheduler.put(id);
+      await apiScheduler.put(id);
       this.$message.success("取消成功！");
       this.listProject();
     },
@@ -521,14 +517,14 @@ export default {
       form.cron_day_of_month = form.cron_day_of_month.join(",");
       form.cron_hour = form.cron_hour.join(",");
       form.cron_minutes = form.cron_minutes.join(",");
-      await this.apiScheduler.post(form);
+      await apiScheduler.post(form);
       this.$message.success("添加成功！");
       this.listProject();
       this.schedulerDialog = false;
     },
     //取消调度
     async cancelScheduler(project_id) {
-      await this.apiScheduler.delete(project_id);
+      await apiScheduler.delete(project_id);
       this.$message.success("取消成功！");
       this.listProject();
     }
