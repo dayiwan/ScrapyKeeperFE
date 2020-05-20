@@ -225,6 +225,18 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
+            <el-tab-pane label="数据回传" name="数据回传">
+                <el-form ref="data_return_form" :model="data_return_form" label-width="100px">
+                    <el-form-item label="回传地址">
+                        <el-input placeholder="请输入系统接口内容" v-model="data_return_form.url" style="margin:5px 0px; width:450px" >
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="回传大小">
+                        <el-input-number v-model="data_return_form.batch_size" :step="50" :max="1000"></el-input-number>
+                    </el-form-item>
+                    <label for="" style="font-size:8px; margin-left:30px; color:#909399">回传大小，指没采集数据量达到设定回传值时，更新数据统计! </label>
+                </el-form>
+            </el-tab-pane>
             <el-tab-pane label="APP key管理" name="APP key管理">
                 <el-form ref="appkey_form" :model="appkey_form">
                     <el-form-item
@@ -264,33 +276,33 @@
                 </el-form>
             </el-tab-pane>
             <el-tab-pane label="启停策略" name="启停策略">
-                <el-form ref="schedular_form" :model="schedular_form">
+                <el-form ref="scheduler_form" :model="scheduler_form">
                     <el-form-item label="启动方式">
-                        <el-radio-group v-model="schedular_form.type">
+                        <el-radio-group v-model="scheduler_form.type">
                             <el-radio :label="1">手动-立即运行</el-radio>
                             <el-radio :label="2">自动</el-radio>
                         </el-radio-group>
-                        <div v-if="schedular_form.type == 2">
+                        <div v-if="scheduler_form.type == 2">
                             <div class="tip">时间参数</div>
                             <div class="sub">
                                 <el-tabs type="border-card">
                                     <el-tab-pane label="月份选择">
-                                        <el-checkbox-group v-model="schedular_form.schedular.cron_month">
+                                        <el-checkbox-group v-model="scheduler_form.scheduler.cron_month">
                                             <el-checkbox v-for="month in 12" :label="month" :key="month">{{ month >= 10 ? month:'0'+String(month)  }}</el-checkbox>
                                         </el-checkbox-group>
                                     </el-tab-pane>
                                     <el-tab-pane label="天选择">
-                                        <el-checkbox-group v-model="schedular_form.schedular.cron_day_of_month">
+                                        <el-checkbox-group v-model="scheduler_form.scheduler.cron_day_of_month">
                                             <el-checkbox v-for="day in 31" :label="day" :key="day">{{  day >= 10 ? day:'0'+String(day)   }}</el-checkbox>
                                         </el-checkbox-group>
                                     </el-tab-pane>
                                     <el-tab-pane label="小时选择">
-                                        <el-checkbox-group v-model="schedular_form.schedular.cron_hour">
+                                        <el-checkbox-group v-model="scheduler_form.scheduler.cron_hour">
                                             <el-checkbox v-for="hour in 24" :label="hour-1" :key="hour-1">{{ hour-1 >= 10 ? hour-1:'0'+String(hour-1) }}</el-checkbox>
                                         </el-checkbox-group>
                                     </el-tab-pane>
                                     <el-tab-pane label="分钟选择">
-                                        <el-checkbox-group v-model="schedular_form.schedular.cron_minutes">
+                                        <el-checkbox-group v-model="scheduler_form.scheduler.cron_minutes">
                                             <el-checkbox v-for="minute in 60" :label="minute-1" :key="minute-1">{{ minute-1 >= 10 ? minute-1:'0'+String(minute-1)  }}</el-checkbox>
                                         </el-checkbox-group>
                                     </el-tab-pane>
@@ -298,16 +310,15 @@
                             </div>
                             <div class="tip">描述</div>
                             <div class="sub">
-                                <el-input type="text" v-model="schedular_form.schedular.description" maxlength="30" show-word-limit="true" placeholder="请输入简短的调度描述，如，每天12点" />
+                                <el-input type="text" v-model="scheduler_form.scheduler.description" maxlength="30" show-word-limit="true" placeholder="请输入简短的调度描述，如，每天12点" />
                             </div>
                         </div>
                     </el-form-item>
                     <el-form-item>
-                         <el-button icon="el-icon-check" size="mini" type="primary" round @click="submitSchedular">提交</el-button>
+                         <el-button icon="el-icon-check" size="mini" type="primary" round @click="submitscheduler">提交</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-
         </el-tabs>
     </div>
 </template>
@@ -371,30 +382,30 @@ export default {
                 target_page: 2,
                 storage_type: 3,
                 redis: {
-                    ip:  '10.5.9.87',
+                    ip:  '172.16.13.22',
                     port: 6379,
                     type: "set"
                 },
                 storage_content: {
-                    ip:  '10.5.9.110',
+                    ip:  '172.16.13.22',
                     port: 3306,
                     username: 'root',
                     password: 'root',
-                    dbname: 'duocaiyuanspider',
+                    dbname: 'duocaiyunspider',
                     tablename: this.project_name
                 },
                 storage_type_1: {
                   dirs:  'D://pythonWorkSpace//spider//test_debug//debug1'
                 },
                 storage_type_2: {
-                  ip:  'http://10.5.9.84:8084/dcy-file/fdfs/upload',
+                  ip:  'http://172.16.119.13/dcy-file/fdfs/upload',
                   port: 3302,
                   username: 'root',
                   password: 'root',
                   
                 },
                 storage_type_3: {
-                  interface_address:  'http://10.5.9.84:8084/dcy-file/fdfs/upload'
+                  interface_address:  'http://172.16.119.13/dcy-file/fdfs/upload'
                 },
                 storage_type_4: {
                     ip:  '10.5.9.84',
@@ -411,20 +422,25 @@ export default {
             account_form: {
                 domains: [],
             },
-            schedular_form: {
+            scheduler_form: {
                 type: 1,
-                schedular: {
+                scheduler: {
                     cron_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                     cron_day_of_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
                     cron_hour: [0],
                     cron_minutes: [0],
                     description: '每天 22 点执行'
                 }
+            },
+            data_return_form: {
+                batch_size: 200,
+                url: "http://172.16.13.22:5060/data_storage"
+                
             }
         }
     },
     methods: {
-        async submitSchedular() {
+        async submitscheduler() {
             var form = {
                 seed_form: JSON.stringify(this.seed_form),
                 download_params_form: JSON.stringify(this.download_params_form), 
@@ -434,13 +450,19 @@ export default {
                 storage_management_form: JSON.stringify(this.storage_management_form),
                 appkey_form: JSON.stringify(this.appkey_form),
                 account_form: JSON.stringify(this.account_form),
-                schedular_form: JSON.stringify(this.schedular_form)
+                data_return_form: JSON.stringify(this.data_return_form),
+                scheduler_form: JSON.stringify(this.scheduler_form)
             }
             var params = {
                 "project_name": this.project_name,
                 "config": JSON.stringify(form)
             }
             const res = await apiAddScheduler(params)
+            console.log(res)
+            if (res) {
+                this.$message.success("调度成功！");
+            }
+            
         },
         seed_form_add() {
              this.seed_form.domains.push({

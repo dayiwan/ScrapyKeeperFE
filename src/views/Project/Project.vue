@@ -15,41 +15,15 @@
       border
       style="width: 100%"
     >
-      <el-table-column label="序号" width="50" type="index" align="center"></el-table-column>
-      <el-table-column label="名称" prop="project_name_zh">
-        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" > {{ scope.row.project_name_zh }}</a></template>
-      </el-table-column>
+      <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
+      <el-table-column label="名称"  width="350" prop="project_name_zh"></el-table-column>
       <el-table-column label="分类">
         <template
           slot-scope="scope"
-        >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}</template>
-      </el-table-column>
-      <el-table-column label="周期" prop="time"></el-table-column>
-      <el-table-column label="发布时间" prop="date_created"></el-table-column>
-      <el-table-column label="状态">
-        <template slot-scope="scope">{{ scope.row.status | statusMapping }}</template>
-      </el-table-column>
-      <el-table-column align="center" width="200" label="操作">
-        <template slot-scope="scope">
-          <el-button
-            v-show="scope.row.category !== 'news'"
-            type="text"
-            @click="addFieldClick(scope.row)"
-          >添加参数</el-button>
-          <el-dropdown placement="bottom" trigger="click">
-            <span class="el-dropdown-link">调度</span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="a" @click.native="runImmediately(scope.row.id)">立即运行</el-dropdown-item>
-              <el-dropdown-item command="b" @click.native="cancleRunning(scope.row.id)">取消运行</el-dropdown-item>
-              <el-dropdown-item command="c" @click.native="schedulerClick(scope.row)">周期调度</el-dropdown-item>
-              <el-dropdown-item command="d" @click.native="cancelScheduler(scope.row.id)">取消调度</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <!-- <el-button type="text" @click="editeClick(scope.row)">编辑</el-button> -->
-          <el-button type="text" style="color: red" @click="del_project(scope.row)">删除</el-button>
+          >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}
         </template>
       </el-table-column>
-
+      <el-table-column label="发布时间" prop="date_created"></el-table-column>
       <el-table-column align="center" label="待采队列">
         <template slot-scope="scope">
           <!-- <svg-icon icon-class="watch"></svg-icon> -->
@@ -67,11 +41,14 @@
           <el-button type="text" @click="dataTrendClick(scope.row.project_name_zh)">查看</el-button>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="日志">
+      <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
           <span class="error-info" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
-          <el-button type="text" @click="ViewLogClick(scope.row)">日志详情</el-button>
+          <el-button type="text" @click="ViewLogClick(scope.row)">良好</el-button>
         </template>
+      </el-table-column>
+      <el-table-column align="center" label="详情">
+        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" >查看详情</a></template>
       </el-table-column>
     </el-table>
 
@@ -140,10 +117,9 @@
 
 <script>
 import {
-  getAllProject,
+  apiGetAllProject,
   apiEditProjectInfo,
   apiGetDataDetail,
-  delProject,
   apiAddProject,
   getDataTrend,
   apiGetSpareUrl,
@@ -433,24 +409,12 @@ export default {
         status: this.query.status,
         project_name_zh: this.query.project_name_zh
       };
-      const res = await getAllProject(params);
+      const res = await apiGetAllProject(params);
       this.listLoading = false;
       this.list = res.data;
       this.pagination.total = res.total;
     },
-    // 删除工程
-    del_project: function(form) {
-      this.$confirm("是否删除?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(async () => {
-        await delProject(form);
-        this.listProject();
-        this.$message.success("删除成功！");
-      });
-    },
-
+  
     // 添加工程
     async addProject(form) {
       this.addProjShow = false;
