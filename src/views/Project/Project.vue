@@ -36,6 +36,7 @@
           <el-button type="text" @click="dataDetail(scope.row)">查看</el-button>
         </template>
       </el-table-column>
+
       <el-table-column align="center" label="数据趋势图">
         <template slot-scope="scope">
           <el-button type="text" @click="dataTrendClick(scope.row.project_name_zh)">查看</el-button>
@@ -61,7 +62,6 @@
         :total="pagination.total"
       ></el-pagination>
     </div>
-
 
     <!-- 数据详情对话框 -->
     <DataDetail
@@ -201,12 +201,9 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null
+      fieldToAddId: null,
     };
   },
-  // created() {
-  //   this.listTemplate();
-  // },
   mounted() {
     this.init();
   },

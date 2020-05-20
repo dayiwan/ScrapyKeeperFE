@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 const querystring = require('querystring')
 
-const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.22:5060' : ''
+const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.3:5060' : ''
 
 
 const handelSuccess = response => {
@@ -72,9 +72,13 @@ class BaseRequest {
     }
 
 
-    get(param) {
+    get(params) {
         return new Promise((resolve, reject) => {
-            request.get(this.url, param).then((res) => {
+            request({
+                url: this.url,
+                params: params,
+                method: 'get'
+            }).then((res) => {
                 resolve(res)
             }).catch((e) => {
                 reject(e)

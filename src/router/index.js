@@ -30,7 +30,20 @@ export const asyncRouterMap = [{
             name: 'project',
             component: () =>
                 import ('@/views/Project/Project.vue'),
-            meta: { title: '项目管理', icon: 'list', roles: ['leader'] }
+            meta: { title: '项目管理', icon: 'list', roles: ['leader'] },
+        }]
+    },
+    {
+        path: '/project',
+        component: Layout,
+        hidden: true,
+        children: [{
+            path: ':project_name',
+            name: 'info',
+            component: () =>
+                import ('@/views/ProjectInfo/ProjectInfo.vue'),
+            meta: { title: '项目详情', icon: 'ip', roles: ['leader'] },
+
         }]
     },
     {
@@ -89,16 +102,16 @@ export const asyncRouterMap = [{
         }]
     },
     {
-        path: '/project',
-        component: Layout,
-        hidden: true,
-        children: [{
-            path: ':project_name',
-            name: 'info',
-            component: () =>
-                import ('@/views/Project/components/ProjectInfo'),
-            meta: { title: 'peizhi', icon: 'ip', roles: ['leader'] },
-           
-        }]
-    },
+        path: '*',
+        component: () =>
+            import ('@/views/404'),
+
+        // children: [{
+        //     path: '404',
+        //     name: '404',
+        //     component: () =>
+        //         import ('@/views/404'),
+        //     meta: { title: 'IP代理', icon: 'ip', roles: ['leader'] }
+        // }]
+    }
 ]
