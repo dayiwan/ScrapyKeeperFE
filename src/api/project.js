@@ -1,7 +1,7 @@
 import { request, requestMultipart } from '@/api/init.js'
 const querystring = require('querystring')
 
-export function getAllProject(form) {
+export function apiGetAllProject(form) {
     return request({
         url: '/project',
         method: 'get',
@@ -23,14 +23,11 @@ export function apiEditProjectInfo(form) {
     })
 }
 
-export function delProject(form) {
+export function apiDelProject(form) {
     return request({
         url: '/project',
         method: 'delete',
-        data: querystring.stringify({
-            id: form.id,
-            project_name: form.project_name
-        })
+        data: querystring.stringify(form)
     })
 }
 
