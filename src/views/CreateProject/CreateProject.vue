@@ -20,13 +20,13 @@ import AddProjByTplForm from "./components/AddProjByTplForm";
 import AddProjFormByConf from "./components/AddProjFormByConf"
 
 import { apiAddProject, apiUploadProject } from "@/api/project";
-import { apiGetTmpl } from "@/api/templates";
+import { apiTemplate } from "@/api";
 
 export default {
   components: { AddProjForm, AddProjByTplForm, AddProjFormByConf },
   data() {
     return {
-      tplList: []
+      tplList: [],
     }
   },
   mounted() {
@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     async listTpl() {
-      const data = await apiGetTmpl();
+      const data = await apiTemplate.get();
       this.tplList = data;
     },
     // 添加工程
@@ -48,8 +48,6 @@ export default {
       try {
         const data = await apiUploadProject(form);
         console.log(data)
-        // can receive data.id
-        // await this.listProject();
       } catch (e) {
         console.error(e);
       } finally {

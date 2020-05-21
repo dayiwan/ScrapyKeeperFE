@@ -15,20 +15,15 @@
       border
       style="width: 100%"
     >
-      <el-table-column label="序号" width="50" type="index" align="center"></el-table-column>
-      <el-table-column label="名称" prop="project_name_zh">
-        <template slot-scope="scope">{{ scope.row.project_name_zh }}</template>
-      </el-table-column>
+      <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
+      <el-table-column label="名称"  width="350" prop="project_name_zh"></el-table-column>
       <el-table-column label="分类">
         <template
           slot-scope="scope"
-        >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}</template>
+          >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}
+        </template>
       </el-table-column>
       <el-table-column label="发布时间" prop="date_created"></el-table-column>
-      <el-table-column label="状态">
-        <template slot-scope="scope">{{ scope.row.status | statusMapping }}</template>
-      </el-table-column>
-
       <el-table-column align="center" label="待采队列">
         <template slot-scope="scope">
           <!-- <svg-icon icon-class="watch"></svg-icon> -->
@@ -47,21 +42,15 @@
           <el-button type="text" @click="dataTrendClick(scope.row.project_name_zh)">查看</el-button>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
           <span class="error-info" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
+          <el-button type="text" @click="ViewLogClick(scope.row)">良好</el-button>
         </template>
       </el-table-column>
-
-       <el-table-column align="center" label="项目配置 / 任务">
-        <template slot-scope="scope">
-          <router-link :to="`/project/${scope.row.project_name}`">
-            <el-button type="text">查看详情</el-button>
-          </router-link>
-        </template>
+      <el-table-column align="center" label="详情">
+        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" >查看详情</a></template>
       </el-table-column>
-
     </el-table>
 
     <div class="pagination">
@@ -128,24 +117,16 @@
 
 <script>
 import {
-  getAllProject,
+  apiGetAllProject,
   apiEditProjectInfo,
   apiGetDataDetail,
-  delProject,
   apiAddProject,
   getDataTrend,
   apiGetSpareUrl,
   delJournakApi,
   apiUploadProject
 } from "@/api/project";
-import {
-  apidRunImmediately,
-  apidCancleRunning,
-  apiAddScheduler,
-  apiCancelScheduler
-} from "@/api/scheduler";
-import { apiGetTmpl } from "@/api/templates";
-import { apiOriginalLog } from "@/api/originalLog";
+import { apiScheduler, apiOriginalLog, apiTemplate } from "@/api";
 import EditBaseInfo from "./components/EditBaseInfo";
 import AddProjectDialog from "./components/AddProjectDialog";
 import SchedulerDialog from "./components/SchedulerDialog";
@@ -213,7 +194,7 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null,
+      fieldToAddId: null
     };
   },
   mounted() {
@@ -283,7 +264,7 @@ export default {
       this.dialog = true;
       this.title = "日志详情";
       this.journalName = form.project_name;
-      const res = await apiOriginalLog(form.id);
+      const res = await apiOriginalLog.get(form.id);
       this.logList = res;
       this.listLoading = false;
     },
@@ -398,7 +379,7 @@ export default {
     },
     // 获取模板列表,将模板列表传入筛选组件和categoryMap,
     async init() {
-      const data = await apiGetTmpl();
+      const data = await apiTemplate.get();
       this.tplList = data;
       for (let item of this.tplList) {
         var item_obj = {};
@@ -418,24 +399,12 @@ export default {
         status: this.query.status,
         project_name_zh: this.query.project_name_zh
       };
-      const res = await getAllProject(params);
+      const res = await apiGetAllProject(params);
       this.listLoading = false;
       this.list = res.data;
       this.pagination.total = res.total;
     },
-    // 删除工程
-    del_project: function(form) {
-      this.$confirm("是否删除?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(async () => {
-        await delProject(form);
-        this.listProject();
-        this.$message.success("删除成功！");
-      });
-    },
-
+  
     // 添加工程
     async addProject(form) {
       this.addProjShow = false;
@@ -499,13 +468,13 @@ export default {
         id: id,
         run_type: "onetime"
       };
-      await apidRunImmediately(params);
+      await apiScheduler.get(params);
       this.$message.success("调度成功！");
       this.listProject();
     },
     // 取消运行事件
     async cancleRunning(id) {
-      await apidCancleRunning(id);
+      await apiScheduler.put(id);
       this.$message.success("取消成功！");
       this.listProject();
     },
@@ -524,14 +493,14 @@ export default {
       form.cron_day_of_month = form.cron_day_of_month.join(",");
       form.cron_hour = form.cron_hour.join(",");
       form.cron_minutes = form.cron_minutes.join(",");
-      await apiAddScheduler(form);
+      await apiScheduler.post(form);
       this.$message.success("添加成功！");
       this.listProject();
       this.schedulerDialog = false;
     },
     //取消调度
     async cancelScheduler(project_id) {
-      await apiCancelScheduler(project_id);
+      await apiScheduler.delete(project_id);
       this.$message.success("取消成功！");
       this.listProject();
     }

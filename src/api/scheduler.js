@@ -9,12 +9,12 @@ export function apidRunImmediately(params) {
     })
 }
 
-export function apidCancleRunning(id) {
+export function apidCancleRunning(scheduler_id) {
     return new Promise((resolve, reject) => {
         request({
             url: '/scheduler',
             method: 'put',
-            data: querystring.stringify({ id: id })
+            data: querystring.stringify({ scheduler_id: scheduler_id })
         }).then((res) => {
             resolve(res)
         }).catch((e) => {
