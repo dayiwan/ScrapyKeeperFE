@@ -14,6 +14,7 @@ export const apiScheduler = new BaseRequest('scheduler');
 export const apiOriginalLog = new BaseRequest('original_log');
 
 
+
 //模板
 export const apiTemplate = new BaseRequest('template')
     //解析模板

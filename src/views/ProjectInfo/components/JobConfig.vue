@@ -56,7 +56,10 @@
                                     :label="item"
                                     :value="item">
                                 </el-option>
-                            </el-select>
+                            </el-select><br />
+                            <el-input placeholder="请求输入代理接口地址" v-model="download_params_form.PROXY_CENTER_URL" style="margin:5px 0px; width:600px" >
+                                <template slot="prepend">代理接口地址</template>
+                            </el-input><br />
                         </div>
                     </el-form-item>
                 </el-form>
@@ -354,7 +357,8 @@ export default {
                 max_file_size: 16,
                 DNS_size: 10,
                 ip_proxy: 1,
-                ip_proxy_value: '所有请求'
+                ip_proxy_value: '所有请求',
+                PROXY_CENTER_URL: "http://172.16.13.22:5060/proxy_ip"
             },
             crawl_range_form: {
                 level: 1,
@@ -458,9 +462,9 @@ export default {
                 "config": JSON.stringify(form)
             }
             const res = await apiAddScheduler(params)
-            console.log(res)
             if (res) {
-                this.$message.success("调度成功！");
+              this.$message.success("调度成功！");
+              this.$emit("refresh")
             }
             
         },
