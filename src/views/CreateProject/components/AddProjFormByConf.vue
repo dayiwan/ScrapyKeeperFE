@@ -10,10 +10,10 @@
     <el-form-item label="数据存储字段">
       <div class="field" v-for="(field, index) in form.fields" :key="index">
         <el-select style="width: 120px;" v-model="field.type" size="small" placeholder="请选择">
-          <el-option label="字符串" value="STRING"></el-option>
-          <el-option label="数字" value="NUMBER"></el-option>
-          <el-option label="长文本" value="TEXT"></el-option>
-          <el-option label="媒体链接" value="MEDIA"></el-option>
+          <el-option label="字符串" value="String(255)"></el-option>
+          <el-option label="数字" value="Float"></el-option>
+          <el-option label="长文本" value="Text"></el-option>
+          <el-option label="媒体链接" value="Media"></el-option>
         </el-select>
         <el-input size="small" v-model="field.name" style="width: 300px;" placeholder="请输入字段名"></el-input>
 
@@ -24,9 +24,9 @@
           size="small"
           placeholder="请选择"
         >
-          <el-option label="XPATH" value="XPATH"></el-option>
-          <el-option label="CSS" value="CSS"></el-option>
-          <el-option label="正则表达式" value="REGEXP"></el-option>
+          <el-option label="xpath" value="xpath"></el-option>
+          <el-option label="css" value="css"></el-option>
+          <el-option label="正则表达式" value="regexp"></el-option>
         </el-select>
 
         <el-input size="small" v-model="field.extract_rule" style="width: 300px;"></el-input>
@@ -53,8 +53,8 @@ export default {
         fields: [
           {
             name: null,
-            type: "STRING",
-            extract_rule_type: "XPATH",
+            type: "String(255)",
+            extract_rule_type: "xpath",
             extract_rule: null
           }
         ]
@@ -65,8 +65,8 @@ export default {
     addField() {
       this.form.fields.push({
         name: null,
-        type: "STRING",
-        extract_rule_type: "XPATH",
+        type: "String(255)",
+        extract_rule_type: "xpath",
         extract_rule: null
       });
     },
