@@ -1,8 +1,13 @@
 <template>
   <el-form class="add-proj-bytpl" :model="form" label-width="100px" label-position="top">
     <el-form-item label="项目名称">
-      <el-input size="small" v-model="form.project_name_zh" auto-complete="off" style="width: 320px;"></el-input>
+      <el-input size="small" v-model="form.project_name_zh"  @input="chgNameZh" auto-complete="off" style="width: 320px;"></el-input>
     </el-form-item>
+
+    <el-form-item label="项目标识（英文）">
+      <el-input size="small" v-model="form.project_name" style="width: 320px;"></el-input>
+    </el-form-item>
+    
 
     <el-form-item label="模板名称">
       <el-select v-model="form.template" size="small" placeholder="请选择">
@@ -20,7 +25,9 @@
 </template>
 
 <script>
+import PinyinMixin from './PinyinMixin'
 export default {
+  mixins: [PinyinMixin],
   props: {
     tplList: { type: Array }
   },

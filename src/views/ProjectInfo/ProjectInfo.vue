@@ -80,7 +80,8 @@ export default {
       title: '日志信息',
       logList: [],
       info: {
-        project_name: "xxxxxxxx",
+        project_name: null,
+        project_name_zh: null,
         date_created: "2020-05-20 12:22:24",
         status: "运行中",
         task_num: 5,
@@ -97,7 +98,7 @@ export default {
       var params = {
         page_size: 1,
         page_index: 1,
-        project_name_zh: this.$route.params.project_name,
+        project_name: this.$route.params.project_name,
         type: "info"
       };
       const res = await apiGetAllProject(params);

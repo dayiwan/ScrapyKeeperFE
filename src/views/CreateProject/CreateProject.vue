@@ -5,7 +5,7 @@
     </el-tab-pane>
 
     <el-tab-pane label="按配置生成工程">
-      <AddProjFormByConf @submit="addProjectByConf" />
+      <AddProjFormByConf @submit="addProjectByTpl" />
     </el-tab-pane>
 
     <el-tab-pane label="自行上传工程文件">
@@ -17,7 +17,7 @@
 <script>
 import AddProjForm from "./components/AddProjForm";
 import AddProjByTplForm from "./components/AddProjByTplForm";
-import AddProjFormByConf from "./components/AddProjFormByConf"
+import AddProjFormByConf from "./components/AddProjFormByConf";
 
 import { apiAddProject, apiUploadProject } from "@/api/project";
 import { apiTemplate } from "@/api";
@@ -26,11 +26,11 @@ export default {
   components: { AddProjForm, AddProjByTplForm, AddProjFormByConf },
   data() {
     return {
-      tplList: [],
-    }
+      tplList: []
+    };
   },
   mounted() {
-    this.listTpl()
+    this.listTpl();
   },
   methods: {
     async listTpl() {
@@ -39,7 +39,6 @@ export default {
     },
     // 添加工程
     async addProject(form) {
-      this.addProjShow = false;
       const loading = this.$loading({
         lock: true,
         text: "工程部署中, 请耐心等候！",
@@ -47,7 +46,7 @@ export default {
       });
       try {
         const data = await apiUploadProject(form);
-        console.log(data)
+        this.$router.push(`/project/${data.project_name}`)
       } catch (e) {
         console.error(e);
       } finally {
@@ -56,25 +55,20 @@ export default {
     },
 
     async addProjectByTpl(form) {
-      this.addProjShow = false;
       const loading = this.$loading({
         lock: true,
         text: "工程部署中, 请耐心等候！",
         spinner: "el-icon-loading"
       });
       try {
-        await apiAddProject(form);
-        await this.listProject();
+        const data = await apiAddProject(form);
+        this.$router.push(`/project/${data.project_name}`)
       } catch (e) {
         console.error(e);
       } finally {
         loading.close();
       }
     },
-
-    async addProjectByConf(form) {
-      console.log(form)
-    }
   }
 };
 </script>
