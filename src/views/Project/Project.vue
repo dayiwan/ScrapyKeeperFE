@@ -19,8 +19,7 @@
       <el-table-column label="名称"  width="350" prop="project_name_zh"></el-table-column>
       <el-table-column label="分类">
         <template
-          slot-scope="scope"
-          >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}
+          slot-scope="scope">{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}
         </template>
       </el-table-column>
       <el-table-column label="发布时间" prop="date_created"></el-table-column>
@@ -45,7 +44,7 @@
       <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
           <span class="error-info" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
-          <el-button type="text" @click="ViewLogClick(scope.row)">良好</el-button>
+          <label for="">{{ scope.row.error | rangeRank }}</label>
         </template>
       </el-table-column>
       <el-table-column align="center" label="详情">
@@ -70,13 +69,6 @@
       :content="Detail.content"
       @dataDetailCancle="dataDetailCancle"
     />
-    <!-- 添加参数对话框 -->
-    <AddField
-      :visible="addField"
-      :tpl_input="tpl_input"
-      @addFieldCancle="addFieldCancle"
-      @addFieldSubmit="addFieldSubmit"
-    />
     <!-- 编辑工程对话框 -->
     <EditBaseInfo
       :visible="editDialog"
@@ -84,27 +76,12 @@
       @cancle="cancle"
       @editInfo="editInfoSubmit"
     />
-    <!-- 添加工程对话框 -->
-    <AddProjectDialog
-      :visible="addProjectDialog"
-      :tplList="tplList"
-      @addProjectCancle="addProjectCancle"
-      @addProjectSubmit="addProjectSubmit"
-    />
-    <!-- 添加调度对话框 -->
-    <SchedulerDialog
-      :visible="schedulerDialog"
-      :form="schedulerForm"
-      @addScheduler="addScheduler"
-      @schedulerClickCancle="schedulerClickCancle"
-    />
     <!-- 日志详情&&待采队列对话框共用组件 -->
-    <LogDialog
-      :visible="dialog"
-      :logList="logList"
-      :title="title"
-      @logViewCancle="logViewCancle"
-      @handleJournal="handleJournal"
+    <RedisDialog
+      :visible="redis_dialog"
+      :logList="redisUrlList"
+      :title="redisTitle"
+      @logViewCancle="redisDagViewCancle"
     />
     <!-- 数据趋势图对话框 -->
     <DataTrend
@@ -128,28 +105,25 @@ import {
 } from "@/api/project";
 import { apiScheduler, apiOriginalLog, apiTemplate } from "@/api";
 import EditBaseInfo from "./components/EditBaseInfo";
-import AddProjectDialog from "./components/AddProjectDialog";
-import SchedulerDialog from "./components/SchedulerDialog";
-import LogDialog from "./components/LogDialog";
+import RedisDialog from "./components/LogDialog";
 import Toolbar from "./components/Toolbar";
 import DataTrend from "./components/DataTrend";
-import AddField from "./components/AddField";
 import DataDetail from "./components/DataDetail";
 
 export default {
   name: "project",
   components: {
     EditBaseInfo,
-    AddProjectDialog,
-    SchedulerDialog,
-    LogDialog,
+    RedisDialog,
     Toolbar,
     DataTrend,
-    AddField,
     DataDetail,
   },
   data() {
     return {
+      redis_dialog: false,
+      redisUrlList: [],
+      redisTitle: "redis队列",
       addProjShow: true,
       query: {
         category: "",
@@ -173,17 +147,12 @@ export default {
         project_name_zh: null
       },
       addProjectDialog: false,
-      schedulerDialog: false,
       schedulerForm: {},
-      dialog: false,
       dataTrendShow: false,
       pictureData: {
         rows: [],
         columns: []
       },
-      logList: [],
-      title: "",
-      addField: false,
       tplList: [],
       toolOptions: [{ key: "全部", value: "" }],
       Detail: {
@@ -213,6 +182,19 @@ export default {
         return "100+";
       } else {
         return value;
+      }
+    },
+    rangeRank(value) { 
+      if (value < 1) {
+        return '良好'
+      } else if (value >= 1 && value < 50) {
+        return '存在错误'
+      } else if (value >= 50 && value < 100) {
+        return '一般错误'
+      } else if (value >= 100 && value < 500) {
+        return '较多错误'
+      } else {
+        return '严重错误'
       }
     }
   },
@@ -258,22 +240,6 @@ export default {
       this.tpl_input = project.tpl_input;
       this.addField = true;
     },
-    //查看日志详情
-    async ViewLogClick(form) {
-      this.listLoading = true;
-      this.dialog = true;
-      this.title = "日志详情";
-      this.journalName = form.project_name;
-      const res = await apiOriginalLog.get(form.id);
-      this.logList = res;
-      this.listLoading = false;
-    },
-    //退出日志详情 || 待采队列对话框
-    logViewCancle() {
-      this.dialog = false;
-      this.title = "";
-      this.logList = [];
-    },
     //退出数据详情对话框
     dataDetailCancle() {
       this.Detail.detail = false;
@@ -284,9 +250,15 @@ export default {
       this.listLoading = true;
       var params = {
         project_name: form.project_name,
-        tpl_input: form.tpl_input
+        project_id: parseInt(form.id) 
       };
-      const res = await apiGetDataDetail(params);
+      var res;
+      try{
+        res = await apiGetDataDetail(params);
+      }catch(err) {
+        this.Detail.detail = true;
+        this.listLoading = false;
+      } 
       if (res !== []) {
         this.Detail.content = res;
         for (let item in res[0]) {
@@ -298,19 +270,25 @@ export default {
       }
       this.Detail.detail = true;
       this.listLoading = false;
-    },
+  },
     // 查看待采队列
     async spareUrl(form) {
-      this.title = "待采队列";
+      this.redisTitle = "待采队列";
       this.listLoading = true;
       var params = {
         project_name: form.project_name,
-        tpl_input: form.tpl_input
+        project_id: parseInt(form.id) 
       };
+      console.log(params)
       const res = await apiGetSpareUrl(params);
-      this.logList = res;
-      this.dialog = true;
+      this.redisUrlList = res;
+      this.redis_dialog = true;
       this.listLoading = false;
+    },
+    redisDagViewCancle(){
+      this.redis_dialog = false;
+      this.redisTitle = "";
+      this.redisUrlList = [];
     },
     //退出数据趋势对话框
     dataTrendCancle() {
@@ -438,65 +416,6 @@ export default {
       } finally {
         loading.close();
       }
-    },
-
-    // 提交添加工程
-    async addProjectSubmit(form) {
-      this.addProjectDialog = false;
-      const loading = this.$loading({
-        lock: true,
-        text: "工程添加中, 该过程大约需要30s, 请耐心等候！",
-        spinner: "el-icon-loading"
-      });
-      form.tpl_input = JSON.stringify(form.tpl_input);
-      try {
-        await apiAddProject(form);
-        await this.listProject();
-      } catch (e) {
-        console.error(e);
-      } finally {
-        loading.close();
-      }
-    },
-    // 取消添加工程
-    addProjectCancle() {
-      this.addProjectDialog = false;
-    },
-    // 立即运行事件
-    async runImmediately(id) {
-      var params = {
-        id: id,
-        run_type: "onetime"
-      };
-      await apiScheduler.get(params);
-      this.$message.success("调度成功！");
-      this.listProject();
-    },
-    // 取消运行事件
-    async cancleRunning(id) {
-      await apiScheduler.put(id);
-      this.$message.success("取消成功！");
-      this.listProject();
-    },
-    // 点击周期调度按钮， 显示对话框
-    schedulerClick(project) {
-      this.schedulerForm = this.$deepcopy(project);
-      this.schedulerDialog = true;
-    },
-    // 关闭周期调度对话框
-    schedulerClickCancle() {
-      this.schedulerDialog = false;
-    },
-    // 提交添加调度事件
-    async addScheduler(form) {
-      form.cron_month = form.cron_month.join(",");
-      form.cron_day_of_month = form.cron_day_of_month.join(",");
-      form.cron_hour = form.cron_hour.join(",");
-      form.cron_minutes = form.cron_minutes.join(",");
-      await apiScheduler.post(form);
-      this.$message.success("添加成功！");
-      this.listProject();
-      this.schedulerDialog = false;
     },
     //取消调度
     async cancelScheduler(project_id) {
