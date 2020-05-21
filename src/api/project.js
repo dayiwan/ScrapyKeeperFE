@@ -2,10 +2,16 @@ import { request, requestMultipart } from '@/api/init.js'
 const querystring = require('querystring')
 
 export function apiGetAllProject(form) {
-    return request({
-        url: '/project',
-        method: 'get',
-        params: form
+    return new Promise((resolve, reject) => {
+        return request({
+            url: '/project',
+            method: 'get',
+            params: form
+        }).then((res) => {
+            resolve(res)
+        }).catch((e) => {
+            reject(e)
+        })
     })
 }
 

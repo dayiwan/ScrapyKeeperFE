@@ -1,7 +1,11 @@
 <template>
   <el-form class="add-proj-form" :model="form" label-width="80px">
     <el-form-item label="项目名称">
-      <el-input size="small" v-model="form.project_name_zh"  style="width: 320px;"></el-input>
+      <el-input size="small" v-model="form.project_name_zh" @input="chgNameZh"  style="width: 320px;"></el-input>
+    </el-form-item>
+
+    <el-form-item label="项目标识（英文）">
+      <el-input size="small" v-model="form.project_name" style="width: 320px;"></el-input>
     </el-form-item>
 
     <el-form-item label="项目名称">
@@ -35,10 +39,13 @@
 
 
 <script>
+import PinyinMixin from './PinyinMixin'
 export default {
+  mixins: [PinyinMixin],
   data() {
     return {
       form: {
+        project_name: null,
         project_name_zh: null,
         master_egg: null,
         slave_egg: null

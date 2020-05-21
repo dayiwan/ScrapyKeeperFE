@@ -49,7 +49,9 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="详情">
-        <template slot-scope="scope"><a :href="'#/project/'+ scope.row.project_name_zh" style="color: #409EFF" >查看详情</a></template>
+        <template slot-scope="scope">
+          <router-link style="color:#409EFF;" :to="`/project/${scope.row.project_name}`">查看详情</router-link>
+        </template>
       </el-table-column>
     </el-table>
 
