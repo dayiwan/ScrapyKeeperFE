@@ -1,6 +1,7 @@
 <template>
   <el-form class="fast-proj-form" :model="form" label-position="top">
-    <el-form-item label="项目名称">
+    <el-form-item label="项目名称" prop="project_name_zh" :rules="[
+      { required: true, message: '请输入项目名称', trigger: 'blur' }]">
       <el-input
         size="small"
         v-model="form.project_name_zh"

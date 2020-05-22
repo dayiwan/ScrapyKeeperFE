@@ -39,10 +39,10 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-button id="add_server" size="small" plain @click="dialogShow = true; handler.type='ADD'">+添加服务器</el-button>
+    <el-button id="add_server" size="small" plain @click="onAddBtnClick">+添加服务器</el-button>
 
     <!-- 添加服务器弹框  -->
-    <el-dialog title="添加服务器" :visible.sync="dialogShow">
+    <el-dialog title="服务器" :visible.sync="dialogShow">
       <machineForm
         :url.sync="machineForm.url"
         :isMaster.sync="machineForm.is_master"
@@ -94,6 +94,13 @@ export default {
   },
   mounted() {},
   methods: {
+    onAddBtnClick(){ 
+      this.handler.type='ADD';
+      this.machineForm.url = '';
+      this.machineForm.status = 1;
+      this.machineForm.is_master = 1
+      this.dialogShow = true;
+    },
     //查看服务器节点详情
     async watchDetail(ip) {
       this.loading = true

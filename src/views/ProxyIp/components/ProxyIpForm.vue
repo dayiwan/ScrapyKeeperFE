@@ -99,7 +99,7 @@
 </template>
 
 <script>
-var isUrl = require('is-url');
+var isUrl = require("is-url");
 
 export default {
   props: {
@@ -122,7 +122,7 @@ export default {
   },
   watch: {
     agent: function(val) {
-      this.form = this.$deepcopy(val)
+      this.form = this.$deepcopy(val);
     }
   },
   data() {
@@ -131,15 +131,18 @@ export default {
       paramType: "params",
       form: this.$deepcopy(this.agent),
       rules: {
+        agency_name: [
+          { required: true, message: "请输入代理名称", trigger: "blur" }
+        ],
         req_url: [
           { required: true, message: "请输入正确URL", trigger: "blur" },
           {
-            min: 1,
+            min: 3,
             max: 100,
             message: "长度在 3 到 100 个字符",
             trigger: "blur"
           }
-        ],
+        ]
       }
     };
   },
@@ -158,20 +161,20 @@ export default {
     },
     onSubmit() {
       if (!isUrl(this.form.req_url)) {
-        this.$message.error("请输入合法url")
+        this.$message.error("请输入合法url");
         return;
       }
 
       if (this.form.agency_name == "") {
-        this.$message.error("请输入代理名称")
+        this.$message.error("请输入代理名称");
         return;
       }
 
-      let form = this.$deepcopy(this.form)
-      form.params = JSON.stringify(form.params)
-      form.headers = JSON.stringify(form.headers)
-      form.body = JSON.stringify(form.body)
-      this.$emit('submit', form)
+      let form = this.$deepcopy(this.form);
+      form.params = JSON.stringify(form.params);
+      form.headers = JSON.stringify(form.headers);
+      form.body = JSON.stringify(form.body);
+      this.$emit("submit", form);
     }
   }
 };

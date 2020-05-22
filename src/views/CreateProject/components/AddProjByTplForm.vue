@@ -1,6 +1,6 @@
 <template>
-  <el-form class="add-proj-bytpl" :model="form" label-width="100px" label-position="top">
-    <el-form-item label="项目名称">
+  <el-form class="add-proj-bytpl"  :model="form" label-width="100px" label-position="top">
+    <el-form-item prop="project_name_zh" label="项目名称" :rules="[{ required: true, message: '请输入项目名称', trigger: 'blur' }]">
       <el-input size="small" v-model="form.project_name_zh"  @input="chgNameZh" auto-complete="off" style="width: 320px;"></el-input>
     </el-form-item>
 
@@ -36,7 +36,7 @@ export default {
       form: {
         project_name_zh: null,
         template: null
-      }
+      },
     }
   },
   methods: {
