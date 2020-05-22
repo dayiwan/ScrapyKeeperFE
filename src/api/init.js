@@ -65,7 +65,7 @@ requestMultipart.interceptors.response.use(
 
 
 
-class BaseRequest {
+class ApiFactory {
 
     constructor(url) {
         this.url = url
@@ -124,5 +124,5 @@ class BaseRequest {
 export {
     request,
     requestMultipart,
-    BaseRequest
+    ApiFactory
 }
