@@ -3,7 +3,6 @@
     <el-form>
       <el-form-item label="服务器ip" label-width="200">
         <el-input
-          name="url"
           v-model="url_"
           @input="chgServerIp"
           auto-complete="off"
@@ -12,21 +11,21 @@
       </el-form-item>
 
       <el-form-item label="服务器状态" label-width="200">
-        <el-radio-group  v-model="status_" @change="chgServerStatus">
+        <el-radio-group v-model="status_" @change="chgServerStatus">
           <el-radio :label="1">可用</el-radio>
           <el-radio :label="0">不可用</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item label="服务器类型" label-width="200">
-        <el-radio-group  v-model="is_master" @change="chgIsMaster">
+        <el-radio-group v-model="is_master" @change="chgIsMaster">
           <el-radio :label="1">主服务器</el-radio>
           <el-radio :label="0">从服务器</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
 
-    <el-button @click="$emit('confirm')">提交</el-button>
+    <el-button @click="onConfirm">提交</el-button>
   </div>
 </template>
 
@@ -43,19 +42,14 @@ export default {
       url_: this.url,
       status_: this.status,
       is_master: this.isMaster,
-      rules: {
-        url: [
-          { required: true, message: "请输入服务器地址！", trigger: "blur" }
-        ]
-      }
     };
   },
   watch: {
     url: function(val) {
-      this.url = val;
+      this.url_ = val;
     },
     status: function(val) {
-      this.status = val;
+      this.status_ = val;
     },
     isMaster: function(val) {
       this.is_master = val;
@@ -63,10 +57,11 @@ export default {
   },
   methods: {
     onConfirm() {
-      this.$emit("confirm");
-    },
-    onCancel() {
-      this.$emit("cancel");
+      if (this.url_ == "") {
+        this.$message.error("请输入服务器ip地址");
+      } else {
+        this.$emit("confirm");
+      }
     },
     chgServerIp(val) {
       this.$emit("update:url", val);
