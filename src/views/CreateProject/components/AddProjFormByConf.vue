@@ -113,7 +113,7 @@ export default {
     }
   }
   .field-title {
-    width: 60px;
+    width: 70px;
     color: black;
     margin-left: 30px;
     margin-right: 10px;

@@ -1,15 +1,15 @@
 <template>
   <el-form class="add-proj-form" :model="form" label-width="80px" label-position="top">
-    <el-form-item label="项目名称" prop="project_name_zh" :rules="[
-      { required: true, message: '请输入项目名称', trigger: 'blur' }]">
+    <el-form-item label="工程名称" prop="project_name_zh" :rules="[
+      { required: true, message: '请输入工程名称', trigger: 'blur' }]">
       <el-input size="small" v-model="form.project_name_zh" @input="chgNameZh"  style="width: 320px;"></el-input>
     </el-form-item>
 
-    <el-form-item label="项目标识（英文）">
+    <el-form-item label="工程标识（英文）">
       <el-input size="small" v-model="form.project_name" style="width: 320px;"></el-input>
     </el-form-item>
 
-    <el-form-item label="项目名称">
+    <el-form-item label="工程名称">
       <div class="upload-area">
         <el-upload
           ref="tplFile"
