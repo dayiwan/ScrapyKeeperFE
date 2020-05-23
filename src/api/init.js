@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 const querystring = require('querystring')
 
-const baseURL = process.env.NODE_ENV == 'development' ? 'http://localhost:5060' : ''
+const baseURL = process.env.NODE_ENV == 'development' ? 'http://10.5.9.119:5060' : ''
 
 
 const handelSuccess = response => {

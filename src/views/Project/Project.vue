@@ -80,7 +80,7 @@
     />
     <!-- 日志详情&&待采队列对话框共用组件 -->
     <RedisDialog
-      :visible="redis_dialog"
+      :visible="redisDialogShow"
       :logList="redisUrlList"
       :title="redisTitle"
       @logViewCancle="redisDagViewCancle"
@@ -123,7 +123,7 @@ export default {
   },
   data() {
     return {
-      redis_dialog: false,
+      redisDialogShow: false,
       redisUrlList: [],
       redisTitle: "redis队列",
       addProjShow: true,
@@ -284,11 +284,11 @@ export default {
       console.log(params)
       const res = await apiGetSpareUrl(params);
       this.redisUrlList = res;
-      this.redis_dialog = true;
+      this.redisDialogShow = true;
       this.listLoading = false;
     },
     redisDagViewCancle(){
-      this.redis_dialog = false;
+      this.redisDialogShow = false;
       this.redisTitle = "";
       this.redisUrlList = [];
     },

@@ -523,7 +523,7 @@ export default {
   watch: {
     current_config: function(val) {
       if (val != null) {
-        let jsonVal = JSON.parse(val)
+        let jsonVal = JSON.parse(val);
         this.seed_form = JSON.parse(jsonVal.seed_form);
         this.download_params_form = JSON.parse(jsonVal.download_params_form);
         this.crawl_range_form = JSON.parse(jsonVal.crawl_range_form);
@@ -531,7 +531,9 @@ export default {
         this.resource_extraction_form = JSON.parse(
           jsonVal.resource_extraction_form
         );
-        this.storage_management_form = JSON.parse(jsonVal.storage_management_form);
+        this.storage_management_form = JSON.parse(
+          jsonVal.storage_management_form
+        );
         this.appkey_form = JSON.parse(jsonVal.appkey_form);
         this.account_form = JSON.parse(jsonVal.account_form);
         this.data_return_form = JSON.parse(jsonVal.data_return_form);
@@ -556,7 +558,7 @@ export default {
         DNS_size: 10,
         ip_proxy: 1,
         ip_proxy_value: "所有请求",
-        PROXY_CENTER_URL: "http://192.168.1.101:5060/proxy_ip"
+        PROXY_CENTER_URL: "http://10.5.9.119:5060/proxy_ip"
       },
       crawl_range_form: {
         level: 1,
@@ -571,7 +573,7 @@ export default {
       },
       crawl_stratege_form: {
         stratege: 1,
-        log_level: "DEBUG"
+        log_level: "INFO"
       },
       resource_extraction_form: {
         suffix: "html,shtml",
@@ -586,29 +588,29 @@ export default {
         target_page: 2,
         storage_type: 3,
         redis: {
-          ip: "192.168.1.101",
+          ip: "10.5.9.87",
           port: 6379,
           type: "set"
         },
         storage_content: {
-          ip: "192.168.1.101",
+          ip: "10.5.9.110",
           port: 3306,
           username: "root",
-          password: "root",
-          dbname: "duocaiyunspider",
+          password: "cetc@2019",
+          dbname: "duocaiyunspider_dataresource",
           tablename: this.project_name
         },
         storage_type_1: {
           dirs: "D://pythonWorkSpace//spider//test_debug//debug1"
         },
         storage_type_2: {
-          ip: "http://10.5.9.84:8084/dcy-file/fdfs/upload",
+          ip: "http://10.5.9.84:8084/fdfs/upload",
           port: 3302,
           username: "root",
           password: "root"
         },
         storage_type_3: {
-          interface_address: "http://172.16.119.13/dcy-file/fdfs/upload"
+          interface_address: "http://10.5.9.84:8084/fdfs/upload"
         },
         storage_type_4: {
           ip: "10.5.9.84",
@@ -669,12 +671,16 @@ export default {
       },
       data_return_form: {
         batch_size: 200,
-        url: "http://192.168.1.101:5060/data_storage"
+        url: "http://10.5.9.119:5060/data_storage"
       }
     };
   },
   methods: {
     async submitscheduler() {
+      const loading = this.$loading({
+        lock: true,
+        spinner: "el-icon-loading"
+      });
       var form = {
         seed_form: JSON.stringify(this.seed_form),
         download_params_form: JSON.stringify(this.download_params_form),
@@ -691,10 +697,15 @@ export default {
         project_name: this.project_name,
         config: JSON.stringify(form)
       };
-      const res = await apiAddScheduler(params);
-      if (res) {
-        this.$message.success("调度成功！");
-        this.$emit("refresh");
+
+      try {
+        const res = await apiAddScheduler(params);
+        if (res) {
+          this.$message.success("调度成功！");
+          this.$emit("refresh");
+        }
+      } finally {
+          loading.close();
       }
     },
     seed_form_add() {

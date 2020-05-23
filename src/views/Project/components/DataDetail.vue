@@ -6,7 +6,7 @@
           <el-table :data="content" max-height="500px" border>
               <el-table-column v-for="( item, index ) in header" :key="index" align="center" :label="item" show-overflow-tooltip>
                   <!-- <template>{{ index }}</template> -->
-                  <template slot-scope="scope">{{ scope.row[item] ? scope.row[item] : 'null'}}</template>
+                  <template slot-scope="scope">{{ scope.row[item] ? scope.row[item] : ''}}</template>
               </el-table-column>
           </el-table>
       </div>
