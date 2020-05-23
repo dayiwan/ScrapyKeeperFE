@@ -519,11 +519,29 @@ import {
 } from "@/api/scheduler";
 
 export default {
-<<<<<<< HEAD
-  props: ["project_name"],
+  props: ["project_name", "current_config"],
+  watch: {
+    current_config: function(val) {
+      if (val != null) {
+        let jsonVal = JSON.parse(val)
+        this.seed_form = JSON.parse(jsonVal.seed_form);
+        this.download_params_form = JSON.parse(jsonVal.download_params_form);
+        this.crawl_range_form = JSON.parse(jsonVal.crawl_range_form);
+        this.crawl_stratege_form = JSON.parse(jsonVal.crawl_stratege_form);
+        this.resource_extraction_form = JSON.parse(
+          jsonVal.resource_extraction_form
+        );
+        this.storage_management_form = JSON.parse(jsonVal.storage_management_form);
+        this.appkey_form = JSON.parse(jsonVal.appkey_form);
+        this.account_form = JSON.parse(jsonVal.account_form);
+        this.data_return_form = JSON.parse(jsonVal.data_return_form);
+        this.scheduler_form = JSON.parse(jsonVal.scheduler_form);
+      }
+    }
+  },
   data() {
     return {
-      activeName: "种子管理",
+      activeName: "下载参数配置",
       ip_proxy_option: ["所有请求", "随机"],
       seed_form: {
         domains: []
@@ -538,7 +556,7 @@ export default {
         DNS_size: 10,
         ip_proxy: 1,
         ip_proxy_value: "所有请求",
-        PROXY_CENTER_URL: "http://172.16.13.22:5060/proxy_ip"
+        PROXY_CENTER_URL: "http://192.168.1.101:5060/proxy_ip"
       },
       crawl_range_form: {
         level: 1,
@@ -552,7 +570,8 @@ export default {
         subdomains_num: 5
       },
       crawl_stratege_form: {
-        stratege: 1
+        stratege: 1,
+        log_level: "DEBUG"
       },
       resource_extraction_form: {
         suffix: "html,shtml",
@@ -567,153 +586,12 @@ export default {
         target_page: 2,
         storage_type: 3,
         redis: {
-          ip: "172.16.13.22",
+          ip: "192.168.1.101",
           port: 6379,
           type: "set"
-=======
-    props: [
-       'project_name'
-    ],
-    data() {
-        return {
-            activeName: '下载参数配置',
-            ip_proxy_option: [
-                '所有请求',
-                '随机'
-            ],
-            seed_form: {
-                domains: [],
-            },
-            download_params_form: {
-                reapt_num: 1,
-                request_num: 8,
-                download_delay: 0.5,
-                timeout: 10,
-                download_speed: 1024, 
-                max_file_size: 16,
-                DNS_size: 10,
-                ip_proxy: 1,
-                ip_proxy_value: '所有请求',
-                PROXY_CENTER_URL: "http://172.16.13.22:5060/proxy_ip"
-            },
-            crawl_range_form: {
-                level: 1,
-                suffix: '',
-                url_deep_num: 3,
-                size_filtering: 50,
-                url_regular_filtering: 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                protocol_filtering: 'http,htpps',
-                max_page_num: 100000,
-                subdomains_num: 5
-            },
-            crawl_stratege_form: {
-                stratege: 1,
-                log_level: "DEBUG"
-            },
-            resource_extraction_form: {
-                suffix: 'html,shtml',
-                agreement_type: 'http,htpps',
-                regular: null,
-                keyword_code: null,
-                keyword: null,
-                keyword_logic: 'and'
-            },
-            storage_management_form: {
-                all_page: 1,
-                target_page: 2,
-                storage_type: 3,
-                redis: {
-                    ip:  '172.16.13.22',
-                    port: 6379,
-                    type: "set"
-                },
-                storage_content: {
-                    ip:  '172.16.13.22',
-                    port: 3306,
-                    username: 'root',
-                    password: 'root',
-                    dbname: 'duocaiyunspider',
-                    tablename: this.project_name
-                },
-                storage_type_1: {
-                  dirs:  'D://pythonWorkSpace//spider//test_debug//debug1'
-                },
-                storage_type_2: {
-                  ip:  'http://172.16.119.13/dcy-file/fdfs/upload',
-                  port: 3302,
-                  username: 'root',
-                  password: 'root',
-                  
-                },
-                storage_type_3: {
-                  interface_address:  'http://172.16.119.13/dcy-file/fdfs/upload'
-                },
-                storage_type_4: {
-                    ip:  '10.5.9.84',
-                    port: 3306,
-                    username: 'root',
-                    password: 'root',
-                    dbname: 'files',
-                    tablename: 'files'
-                }
-            },
-            appkey_form: {
-                domains: [],
-            },
-            account_form: {
-                domains: [],
-            },
-            scheduler_form: {
-                type: 1,
-                scheduler: {
-                    cron_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    cron_day_of_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
-                    cron_hour: [0],
-                    cron_minutes: [0],
-                    description: '每天 22 点执行'
-                }
-            },
-            data_return_form: {
-                batch_size: 200,
-                url: "http://172.16.13.22:5060/data_storage"
-                
-            }
-        }
-    },
-    methods: {
-        async submitscheduler() {
-            var form = {
-                seed_form: JSON.stringify(this.seed_form),
-                download_params_form: JSON.stringify(this.download_params_form), 
-                crawl_range_form: JSON.stringify(this.crawl_range_form),
-                crawl_stratege_form: JSON.stringify(this.crawl_stratege_form),
-                resource_extraction_form: JSON.stringify(this.resource_extraction_form),
-                storage_management_form: JSON.stringify(this.storage_management_form),
-                appkey_form: JSON.stringify(this.appkey_form),
-                account_form: JSON.stringify(this.account_form),
-                data_return_form: JSON.stringify(this.data_return_form),
-                scheduler_form: JSON.stringify(this.scheduler_form)
-            }
-            var params = {
-                "project_name": this.project_name,
-                "config": JSON.stringify(form)
-            }
-            const res = await apiAddScheduler(params)
-            if (res) {
-              this.$message.success("调度成功！");
-              this.$emit("refresh")
-            }
-            
-        },
-        seed_form_add() {
-             this.seed_form.domains.push({
-                value: '',
-                key: Date.now()
-            })
->>>>>>> 20972b7d26a43dd4d6c244ab56013f3a099f4617
         },
         storage_content: {
-          ip: "172.16.13.22",
+          ip: "192.168.1.101",
           port: 3306,
           username: "root",
           password: "root",
@@ -724,7 +602,7 @@ export default {
           dirs: "D://pythonWorkSpace//spider//test_debug//debug1"
         },
         storage_type_2: {
-          ip: "http://172.16.119.13/dcy-file/fdfs/upload",
+          ip: "http://10.5.9.84:8084/dcy-file/fdfs/upload",
           port: 3302,
           username: "root",
           password: "root"
@@ -791,7 +669,7 @@ export default {
       },
       data_return_form: {
         batch_size: 200,
-        url: "http://172.16.13.22:5060/data_storage"
+        url: "http://192.168.1.101:5060/data_storage"
       }
     };
   },
@@ -865,7 +743,7 @@ export default {
 
 
 <style lang="scss" >
-<<<<<<< head .jobconfig {
+.jobconfig {
   .el-select .el-input__inner {
     width: 300px;
   }
@@ -873,13 +751,7 @@ export default {
   .el-tabs--border-card {
     box-shadow: none;
   }
-  ======= .el-input__inner {
-    height: 30px;
-  }
-  .el-select .el-input__inner {
-    width: 300px;
-  }
-  >>>>>>>20972b7d26a43dd4d6c244ab56013f3a099f4617 .el-input--prefix {
+  .el-input--prefix {
     padding-left: 72px;
     background-color: #f5f7fa;
     color: #909399;

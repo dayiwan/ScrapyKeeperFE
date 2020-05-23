@@ -25,10 +25,10 @@
         >删除工程</el-button>
       </div>
     </div>
-    <JobConfig :project_name="info.project_name" v-on:refresh="getPorject"/>
+    <JobConfig :project_name="info.project_name" :current_config="currentConfig" v-on:refresh="getPorject"/>
     <div class="task-box">
       <div class="title">周期任务</div>
-      <el-table :data="info.scheduler_list" max-height="500px">
+      <el-table :data="schedulerList" max-height="500px">
         <el-table-column label="序号" width="50" type="index" align="center"></el-table-column>
         <el-table-column label="月份" width="300" align="center" prop="cron_month"  show-overflow-tooltip></el-table-column>
         <el-table-column label="天" width="300" align="center" prop="cron_day_of_month"  show-overflow-tooltip></el-table-column>
@@ -104,7 +104,9 @@ export default {
         task_num: 5,
         task_list: [],
         scheduler_list: []
-      }
+      },
+      schedulerList: [],
+      currentConfig: null
     };
   },
   created() {
@@ -121,6 +123,18 @@ export default {
       };
       const res = await apiGetAllProject(params);
       this.info = res;
+
+      // 获取任务列表，将最近一次任务的配置传给配置组件
+      if (res.scheduler_list.length > 0) {
+        this.currentConfig = res.scheduler_list[0].config
+      }
+
+      // 筛选周期任务
+      for (const scheduler in res.scheduler_list) {
+        if (scheduler.run_type != 'onetime') {
+          this.schedulerList.push(this.$deepcopy(scheduler))
+        }
+      }
     },
     // 取消正在运行
     async cancel_running(scheduler_id) {
