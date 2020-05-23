@@ -1,7 +1,5 @@
 <template>
   <div class="data-center" v-if="flag">
-    <!-- 服务器状态饼图组件 -->
-    <!-- <ServerStatus :data="pieChartList" /> -->
 
     <!-- 数据概览组件 -->
     <DataOverview :num="num" :totalSize="totalSize" :fileSize="fileSize" />
@@ -136,45 +134,6 @@ export default {
       emailArr: [],
       emailInputing: "",
       apiEmail
-
-      // pieChartList: [
-      //   {
-      //     domId: "cpu-chart",
-      //     title: "CPU使用量",
-      //     legendData: ["已使用", "未使用"],
-      //     seriesData: [
-      //       { value: 0, name: "已使用" },
-      //       { value: 0, name: "未使用" }
-      //     ]
-      //   },
-      //   {
-      //     domId: "RAM-chart",
-      //     title: "内存使用量",
-      //     legendData: ["已使用", "未使用"],
-      //     seriesData: [
-      //       { value: 0, name: "已使用" },
-      //       { value: 0, name: "未使用" }
-      //     ]
-      //   },
-      //   {
-      //     domId: "project-running-chart",
-      //     title: "运行率",
-      //     legendData: ["正在运行", "等待"],
-      //     seriesData: [
-      //       { value: 0, name: "正在运行" },
-      //       { value: 0, name: "等待" }
-      //     ]
-      //   },
-      //   {
-      //     domId: "project-running-status-chart",
-      //     title: "错误率",
-      //     legendData: ["正常", "错误"],
-      //     seriesData: [
-      //       { value: 0, name: "错误" },
-      //       { value: 0, name: "正常" }
-      //     ]
-      //   }
-      // ],
     };
   },
   mounted() {
@@ -182,10 +141,16 @@ export default {
   },
   methods: {
     async init() {
-      // this.getStatus();
+      this.getDataOverview();
       this.getProjectWeekData();
       this.getDataTrend();
       this.listEmail();
+    },
+    async getDataOverview() {
+      const res = await apiDataCentral.get()
+      this.num = res.dataCount
+      this.totalSize = res.data_size
+      this.fileSize = res.file_size
     },
     // 获取七天内数据总入库量趋势
     async getDataTrend() {
@@ -245,31 +210,6 @@ export default {
       loading.close();
     }
 
-    // async getStatus() {
-    //   const res = await apiGetStatus();
-    //   this.flag = true;
-    //   this.pieChartList[0].seriesData[0].value = parseInt(res.cupStatus.used);
-    //   this.pieChartList[0].seriesData[1].value = parseInt(res.cupStatus.Unused);
-    //   this.pieChartList[1].seriesData[0].value = parseInt(res.memorystate.used);
-    //   this.pieChartList[1].seriesData[1].value = parseInt(
-    //     res.memorystate.Unused
-    //   );
-    //   this.pieChartList[2].seriesData[0].value = parseInt(
-    //     res.project_running_status.running
-    //   );
-    //   this.pieChartList[2].seriesData[1].value = parseInt(
-    //     res.project_running_status.waitting
-    //   );
-    //   this.pieChartList[3].seriesData[0].value = parseInt(
-    //     res.project_error_rate_status.error
-    //   );
-    //   this.pieChartList[3].seriesData[1].value = parseInt(
-    //     res.project_error_rate_status.normal
-    //   );
-    //   this.num = res.dataCount;
-    //   this.fileSize = res.file_size;
-    //   this.totalSize = res.data_size;
-    // },
   }
 };
 </script>

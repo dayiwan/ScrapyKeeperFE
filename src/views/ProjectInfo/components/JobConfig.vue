@@ -8,19 +8,17 @@
             :label="'种子' + index"
             :key="domain.key"
             :prop="'domains.' + index + '.value'"
-            :rules="{
-                        required: true, message: '值不能为空', trigger: 'blur'
-                        }"
+            :rules="{required: true, message: '值不能为空', trigger: 'blur'}"
           >
             <el-input
               v-model="domain.value"
               style="width:300px; margin-right: 10px"
               placeholder="种子"
             ></el-input>
-            <el-button @click.prevent="seed_form_remove(domain)">删除</el-button>
+            <el-button size="mini" @click.prevent="seed_form_remove(domain)">删除</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="seed_form_add">添加种子</el-button>
+            <el-button size="mini" @click="seed_form_add">添加种子</el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -120,6 +118,15 @@
               <el-radio :label="1">深度优先</el-radio>
               <el-radio :label="2">广度优先</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="日志等级">
+            <el-select v-model="crawl_stratege_form.log_level" placeholder="请选择">
+              <el-option key="DEBUG" label="调试信息" value="DEBUG"></el-option>
+              <el-option key="INFO" label="一般信息" value="INFO"></el-option>
+              <el-option key="WARNING" label="警告信息" value="WARNING"></el-option>
+              <el-option key="ERROR" label="一般错误" value="ERROR"></el-option>
+              <el-option key="CRITICAL" label="严重错误" value="CRITICAL"></el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -388,11 +395,14 @@
                         required: true, message: '值不能为空', trigger: 'blur'
                         }"
           >
-            <el-input v-model="domain.value" style="width:300px"></el-input>
-            <el-button @click.prevent="removeDomain(domain)">删除</el-button>
+            <el-input
+              v-model="domain.value"
+              style="width:300px;margin-right:15px; line-height: 15px"
+            ></el-input>
+            <el-button @click.prevent="removeDomain(domain)" size="mini">删除</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="addDomain">新增key</el-button>
+            <el-button @click="addDomain" size="mini">新增key</el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -412,11 +422,15 @@
               style="width:300px; margin-right: 10px"
               placeholder="用户名"
             ></el-input>
-            <el-input v-model="domain.value" style="width:300px" placeholder="密码"></el-input>
-            <el-button @click.prevent="account_form_remove(domain)">删除</el-button>
+            <el-input
+              v-model="domain.value"
+              style="width:300px; margin-right: 15px"
+              placeholder="密码"
+            ></el-input>
+            <el-button size="mini" @click.prevent="account_form_remove(domain)">删除</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button @click="account_form_add">新增账户</el-button>
+            <el-button @click="account_form_add" size="mini">新增账户</el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -505,6 +519,7 @@ import {
 } from "@/api/scheduler";
 
 export default {
+<<<<<<< HEAD
   props: ["project_name"],
   data() {
     return {
@@ -555,6 +570,147 @@ export default {
           ip: "172.16.13.22",
           port: 6379,
           type: "set"
+=======
+    props: [
+       'project_name'
+    ],
+    data() {
+        return {
+            activeName: '下载参数配置',
+            ip_proxy_option: [
+                '所有请求',
+                '随机'
+            ],
+            seed_form: {
+                domains: [],
+            },
+            download_params_form: {
+                reapt_num: 1,
+                request_num: 8,
+                download_delay: 0.5,
+                timeout: 10,
+                download_speed: 1024, 
+                max_file_size: 16,
+                DNS_size: 10,
+                ip_proxy: 1,
+                ip_proxy_value: '所有请求',
+                PROXY_CENTER_URL: "http://172.16.13.22:5060/proxy_ip"
+            },
+            crawl_range_form: {
+                level: 1,
+                suffix: '',
+                url_deep_num: 3,
+                size_filtering: 50,
+                url_regular_filtering: 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                protocol_filtering: 'http,htpps',
+                max_page_num: 100000,
+                subdomains_num: 5
+            },
+            crawl_stratege_form: {
+                stratege: 1,
+                log_level: "DEBUG"
+            },
+            resource_extraction_form: {
+                suffix: 'html,shtml',
+                agreement_type: 'http,htpps',
+                regular: null,
+                keyword_code: null,
+                keyword: null,
+                keyword_logic: 'and'
+            },
+            storage_management_form: {
+                all_page: 1,
+                target_page: 2,
+                storage_type: 3,
+                redis: {
+                    ip:  '172.16.13.22',
+                    port: 6379,
+                    type: "set"
+                },
+                storage_content: {
+                    ip:  '172.16.13.22',
+                    port: 3306,
+                    username: 'root',
+                    password: 'root',
+                    dbname: 'duocaiyunspider',
+                    tablename: this.project_name
+                },
+                storage_type_1: {
+                  dirs:  'D://pythonWorkSpace//spider//test_debug//debug1'
+                },
+                storage_type_2: {
+                  ip:  'http://172.16.119.13/dcy-file/fdfs/upload',
+                  port: 3302,
+                  username: 'root',
+                  password: 'root',
+                  
+                },
+                storage_type_3: {
+                  interface_address:  'http://172.16.119.13/dcy-file/fdfs/upload'
+                },
+                storage_type_4: {
+                    ip:  '10.5.9.84',
+                    port: 3306,
+                    username: 'root',
+                    password: 'root',
+                    dbname: 'files',
+                    tablename: 'files'
+                }
+            },
+            appkey_form: {
+                domains: [],
+            },
+            account_form: {
+                domains: [],
+            },
+            scheduler_form: {
+                type: 1,
+                scheduler: {
+                    cron_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    cron_day_of_month: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                    cron_hour: [0],
+                    cron_minutes: [0],
+                    description: '每天 22 点执行'
+                }
+            },
+            data_return_form: {
+                batch_size: 200,
+                url: "http://172.16.13.22:5060/data_storage"
+                
+            }
+        }
+    },
+    methods: {
+        async submitscheduler() {
+            var form = {
+                seed_form: JSON.stringify(this.seed_form),
+                download_params_form: JSON.stringify(this.download_params_form), 
+                crawl_range_form: JSON.stringify(this.crawl_range_form),
+                crawl_stratege_form: JSON.stringify(this.crawl_stratege_form),
+                resource_extraction_form: JSON.stringify(this.resource_extraction_form),
+                storage_management_form: JSON.stringify(this.storage_management_form),
+                appkey_form: JSON.stringify(this.appkey_form),
+                account_form: JSON.stringify(this.account_form),
+                data_return_form: JSON.stringify(this.data_return_form),
+                scheduler_form: JSON.stringify(this.scheduler_form)
+            }
+            var params = {
+                "project_name": this.project_name,
+                "config": JSON.stringify(form)
+            }
+            const res = await apiAddScheduler(params)
+            if (res) {
+              this.$message.success("调度成功！");
+              this.$emit("refresh")
+            }
+            
+        },
+        seed_form_add() {
+             this.seed_form.domains.push({
+                value: '',
+                key: Date.now()
+            })
+>>>>>>> 20972b7d26a43dd4d6c244ab56013f3a099f4617
         },
         storage_content: {
           ip: "172.16.13.22",
@@ -709,16 +865,21 @@ export default {
 
 
 <style lang="scss" >
-.jobconfig {
+<<<<<<< head .jobconfig {
   .el-select .el-input__inner {
     width: 300px;
   }
 
   .el-tabs--border-card {
-      box-shadow: none;
+    box-shadow: none;
   }
-
-  .el-input--prefix {
+  ======= .el-input__inner {
+    height: 30px;
+  }
+  .el-select .el-input__inner {
+    width: 300px;
+  }
+  >>>>>>>20972b7d26a43dd4d6c244ab56013f3a099f4617 .el-input--prefix {
     padding-left: 72px;
     background-color: #f5f7fa;
     color: #909399;
@@ -733,5 +894,8 @@ export default {
     margin-left: 16px;
     color: #909399;
   }
+}
+.el-form-item {
+  margin-bottom: 5px;
 }
 </style>

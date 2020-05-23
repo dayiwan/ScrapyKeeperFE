@@ -1,6 +1,7 @@
 <template>
   <el-form class="fast-proj-form" :model="form" label-position="top">
-    <el-form-item label="工程名称">
+    <el-form-item label="工程名称" prop="project_name_zh" :rules="[
+      { required: true, message: '请输入工程名称', trigger: 'blur' }]">
       <el-input
         size="small"
         v-model="form.project_name_zh"
@@ -123,7 +124,7 @@ export default {
     }
   }
   .field-title {
-    width: 60px;
+    width: 70px;
     color: black;
     margin-left: 30px;
     margin-right: 10px;
