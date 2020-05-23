@@ -13,10 +13,10 @@
                         }"
                         >
                             <el-input v-model="domain.value"  style="width:300px; margin-right: 10px" placeholder="种子"></el-input>
-                            <el-button @click.prevent="seed_form_remove(domain)">删除</el-button>
+                            <el-button size="mini" @click.prevent="seed_form_remove(domain)">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="seed_form_add">添加种子</el-button>
+                        <el-button size="mini" @click="seed_form_add">添加种子</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -99,6 +99,15 @@
                             <el-radio :label="1">深度优先</el-radio>
                             <el-radio :label="2">广度优先</el-radio>
                         </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="日志等级">
+                        <el-select v-model="crawl_stratege_form.log_level" placeholder="请选择">
+                            <el-option key="DEBUG" label="调试信息" value="DEBUG"></el-option>
+                            <el-option key="INFO" label="一般信息" value="INFO"></el-option>
+                            <el-option key="WARNING" label="警告信息" value="WARNING"></el-option>
+                            <el-option key="ERROR" label="一般错误" value="ERROR"></el-option>
+                            <el-option key="CRITICAL" label="严重错误" value="CRITICAL"></el-option>
+                        </el-select>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -251,10 +260,10 @@
                         required: true, message: '值不能为空', trigger: 'blur'
                         }"
                         >
-                            <el-input v-model="domain.value"  style="width:300px"></el-input><el-button @click.prevent="removeDomain(domain)">删除</el-button>
+                            <el-input v-model="domain.value"  style="width:300px;margin-right:15px; line-height: 15px"></el-input><el-button @click.prevent="removeDomain(domain)" size="mini">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="addDomain">新增key</el-button>
+                        <el-button @click="addDomain" size="mini">新增key</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -270,11 +279,11 @@
                         }"
                         >
                             <el-input v-model="domain.value"  style="width:300px; margin-right: 10px" placeholder="用户名"></el-input>
-                            <el-input v-model="domain.value"  style="width:300px" placeholder="密码"></el-input>
-                            <el-button @click.prevent="account_form_remove(domain)">删除</el-button>
+                            <el-input v-model="domain.value"  style="width:300px; margin-right: 15px" placeholder="密码"></el-input>
+                            <el-button size="mini" @click.prevent="account_form_remove(domain)">删除</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="account_form_add">新增账户</el-button>
+                        <el-button @click="account_form_add" size="mini">新增账户</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -371,7 +380,8 @@ export default {
                 subdomains_num: 5
             },
             crawl_stratege_form: {
-                stratege: 1
+                stratege: 1,
+                log_level: "DEBUG"
             },
             resource_extraction_form: {
                 suffix: 'html,shtml',
@@ -514,8 +524,12 @@ export default {
 
 
 <style lang="scss" >
+ .el-input__inner{
+    height: 30px;
+ }
 .el-select .el-input__inner {
     width: 300px;
+    
 }
 
 .el-input--prefix {
@@ -533,6 +547,10 @@ export default {
 .prefixSlot{
     margin-left: 16px;
     color: #909399;
+    
+}
+.el-form-item {
+    margin-bottom: 5px;
     
 }
 </style>
