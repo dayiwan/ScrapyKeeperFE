@@ -412,30 +412,16 @@
             v-for="(domain, index) in account_form.domains"
             :label="'用户' + index"
             :key="domain.key"
-<<<<<<< HEAD
             :prop="'domains.' + index"
             :rules="{ required: true, message: '值不能为空', trigger: 'blur'}"
           >
             <el-input
               v-model="domain.username"
-=======
-            :prop="'domains.' + index + '.value'"
-            :rules="{
-                        required: true, message: '值不能为空', trigger: 'blur'
-                        }"
-          >
-            <el-input
-              v-model="domain.value"
->>>>>>> 5e860fef716d6fe6f9b6daa1478ce774698e7fb6
               style="width:300px; margin-right: 10px"
               placeholder="用户名"
             ></el-input>
             <el-input
-<<<<<<< HEAD
               v-model="domain.password"
-=======
-              v-model="domain.value"
->>>>>>> 5e860fef716d6fe6f9b6daa1478ce774698e7fb6
               style="width:300px; margin-right: 15px"
               placeholder="密码"
             ></el-input>
@@ -637,15 +623,11 @@ export default {
         domains: []
       },
       account_form: {
-<<<<<<< HEAD
         domains: [
           {"username": "taozi926494@sina.com", "password": "taozi926494!@#$%"},
           {"username": "15288147845", "password": "Clc372493"},
           {"username": "1030617785@qq.com", "password": "YGPCHQ19920612"}
         ]
-=======
-        domains: []
->>>>>>> 5e860fef716d6fe6f9b6daa1478ce774698e7fb6
       },
       scheduler_form: {
         type: 1,
