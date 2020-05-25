@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 const querystring = require('querystring')
 
-const baseURL = process.env.NODE_ENV == 'development' ? 'http://172.16.13.22:5060' : ''
+const baseURL = process.env.NODE_ENV == 'development' ? 'http://10.5.9.119:5060' : ''
 
 
 const handelSuccess = response => {
@@ -65,7 +65,7 @@ requestMultipart.interceptors.response.use(
 
 
 
-class BaseRequest {
+class ApiFactory {
 
     constructor(url) {
         this.url = url
@@ -124,5 +124,5 @@ class BaseRequest {
 export {
     request,
     requestMultipart,
-    BaseRequest
+    ApiFactory
 }

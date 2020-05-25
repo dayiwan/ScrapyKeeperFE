@@ -112,3 +112,12 @@ export function delJournakApi(params) {
         data: querystring.stringify(params)
     })
 }
+
+//处理日志信息
+export function getJournakApi(params) {
+    return request({
+        url: '/log_manage/error',
+        method: 'post',
+        data: querystring.stringify(params)
+    })
+}
