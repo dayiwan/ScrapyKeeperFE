@@ -2,7 +2,30 @@
   <div class="jobconfig">
     <el-tabs v-model="activeName" type="border-card">
       <el-tab-pane label="种子管理" name="种子管理">
-        <el-form ref="seed_form" :model="seed_form">
+        <div class="add-seed">
+          <div class="new-feed">
+            <el-form label-position="right" label-width="50px">
+              <el-form-item label="种子" prop="addFeed">
+                <el-input
+                  style="width:300px; margin-right: 20px"
+                  placeholder="种子"
+                  v-model="addFeed"
+                ></el-input>
+                <el-button size="small" type="primary" @click="seed_form_add">添加种子</el-button>
+              </el-form-item>
+              <el-form-item></el-form-item>
+            </el-form>
+          </div>
+          <div class="old-feed">
+            <span>已有种子</span>
+          </div>
+          <el-form style="margin-left:20px">
+            <el-form-item>
+              <el-input type="textarea" v-model="seed_form.domains" :rows="6" style="width:500px;"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <!-- <el-form ref="seed_form" :model="seed_form">
           <el-form-item
             v-for="(domain, index) in seed_form.domains"
             :label="'种子' + index"
@@ -20,7 +43,7 @@
           <el-form-item>
             <el-button size="mini" @click="seed_form_add">添加种子</el-button>
           </el-form-item>
-        </el-form>
+        </el-form>-->
       </el-tab-pane>
       <el-tab-pane label="下载参数配置" name="下载参数配置">
         <el-form ref="download_params_form" :model="download_params_form" label-width="200px">
@@ -541,6 +564,7 @@ export default {
   },
   data() {
     return {
+      addFeed: "",
       activeName: "下载参数配置",
       ip_proxy_option: ["所有请求", "随机"],
       seed_form: {
@@ -624,9 +648,9 @@ export default {
       },
       account_form: {
         domains: [
-          {"username": "taozi926494@sina.com", "password": "taozi926494!@#$%"},
-          {"username": "15288147845", "password": "Clc372493"},
-          {"username": "1030617785@qq.com", "password": "YGPCHQ19920612"}
+          { username: "taozi926494@sina.com", password: "taozi926494!@#$%" },
+          { username: "15288147845", password: "Clc372493" },
+          { username: "1030617785@qq.com", password: "YGPCHQ19920612" }
         ]
       },
       scheduler_form: {
@@ -707,21 +731,23 @@ export default {
           this.$emit("refresh");
         }
       } finally {
-          loading.close();
+        loading.close();
       }
     },
     seed_form_add() {
-      this.seed_form.domains.push({
-        value: "",
-        key: Date.now()
-      });
-    },
-    seed_form_remove(item) {
-      var index = this.seed_form.domains.indexOf(item);
-      if (index !== -1) {
-        this.seed_form.domains.splice(index, 1);
+      if (this.addFeed == "") {
+        this.$message.info({ message: "不能添加空的种子!", showClose: true });
+      } else {
+        this.seed_form.domains.push(this.addFeed);
       }
+      this.addFeed = "";
     },
+    // seed_form_remove(item) {
+    //   var index = this.seed_form.domains.indexOf(item);
+    //   if (index !== -1) {
+    //     this.seed_form.domains.splice(index, 1);
+    //   }
+    // },
     account_form_add() {
       this.account_form.domains.push({
         value: "",
@@ -756,6 +782,23 @@ export default {
 
 
 <style lang="scss" >
+.add-seed {
+  display: flex;
+  flex-direction: row;
+  .new-feed,
+  .old-feed {
+    display: flex;
+    align-items: center;
+  }
+  .old-feed {
+    span {
+      margin-left: 40px;
+      font-size: 14px;
+      color: #606266;
+      font-weight: 700;
+    }
+  }
+}
 .jobconfig {
   .el-select .el-input__inner {
     width: 300px;
