@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
-          <span class="error-info" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
+          <span class="error-info" @click="elk_error_log_click(scope.row.project_name)" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
           <label for="">{{ scope.row.error | rangeRank }}</label>
         </template>
       </el-table-column>
@@ -91,6 +91,18 @@
       :pictureData="pictureData"
       @dataTrendCancle="dataTrendCancle"
     />
+
+
+    <el-dialog :visible.sync="elk.elk_error_log" :show-close="false" :close-on-click-modal="false">
+      <div class="title">错误日志信息</div>
+      <div class="content">
+        <p v-for="(log_line, i) in elk.elk_error_log_list" :key="i">{{log_line}}</p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" size="small" @click="handleJournal">提交处理</el-button>
+        <el-button size="small" @click="close_elk_error_log">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,6 +115,7 @@ import {
   getDataTrend,
   apiGetSpareUrl,
   delJournakApi,
+  getJournakApi,
   apiUploadProject
 } from "@/api/project";
 import { apiScheduler, apiOriginalLog, apiTemplate } from "@/api";
@@ -165,7 +178,13 @@ export default {
       journalName: "",
       tpl_input: null,
       fieldToAdd: {},
-      fieldToAddId: null
+      fieldToAddId: null,
+      elk: {
+        project_name: null,
+        elk_error_log: false,
+        elk_error_log_list: []
+      }
+     
     };
   },
   mounted() {
@@ -201,15 +220,34 @@ export default {
     }
   },
   methods: {
+    // 点开elk的错误信息
+    async elk_error_log_click(project_name) {
+      this.elk.elk_error_log  = true;
+      this.elk.project_name = project_name;
+      var form = {
+        project_name: this.elk.project_name,
+        page: 1,
+        page_size: 50
+      }
+      const res = await getJournakApi(form);
+      this.elk.elk_error_log_list = res;
+    },
+    // 关闭elk的错误信息对话框
+    close_elk_error_log(project_name) {
+      this.elk.elk_error_log  = false;
+      this.elk.elk_error_log_list = [];
+      this.elk.project_name = null;
+    },
+
     // 处理日志详情
     async handleJournal() {
       var params = {
-        project_name: this.journalName
+        project_name: this.elk.project_name
       };
       const res = await delJournakApi(params);
-      this.logViewCancle();
       this.$message.success("提交成功！");
-      this.listProject();
+      this.elk.elk_error_log  = false;
+      await this.listProject();
     },
     // 确认添加参数
     async addFieldSubmit(fields) {

@@ -19,7 +19,7 @@
           :limit="1"
           :on-change="chgMasterEgg"
         >
-          <el-button slot="trigger" size="small" type="primary">上传模板代码（zip压缩文件）</el-button>
+          <el-button slot="trigger" size="small" type="primary">上传主爬虫（egg压缩文件）</el-button>
         </el-upload>
 
         <el-upload
@@ -30,7 +30,7 @@
           :limit="1"
           :on-change="chgSlaveEgg"
         >
-          <el-button slot="trigger" size="small" type="primary">上传模板代码（zip压缩文件）</el-button>
+          <el-button slot="trigger" size="small" type="primary">上传从爬虫（egg压缩文件）</el-button>
         </el-upload>
       </div>
     </el-form-item>
