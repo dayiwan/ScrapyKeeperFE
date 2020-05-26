@@ -21,7 +21,7 @@
           </div>
           <el-form style="margin-left:20px">
             <el-form-item>
-              <el-input type="textarea" v-model="seed_form.domains" :rows="6" style="width:500px;"></el-input>
+              <el-input type="textarea" v-model="seed_form" :rows="6" style="width:500px;"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -567,9 +567,7 @@ export default {
       addFeed: "",
       activeName: "下载参数配置",
       ip_proxy_option: ["所有请求", "随机"],
-      seed_form: {
-        domains: []
-      },
+      seed_form: [],
       download_params_form: {
         reapt_num: 1,
         request_num: 8,
@@ -737,8 +735,10 @@ export default {
     seed_form_add() {
       if (this.addFeed == "") {
         this.$message.info({ message: "不能添加空的种子!", showClose: true });
+      } else if( this.seed_form.indexOf(this.addFeed) > -1 ) {
+        this.$message.info({ message: '该种子已存在!', showClose: true })
       } else {
-        this.seed_form.domains.push(this.addFeed);
+        this.seed_form.push(this.addFeed);
       }
       this.addFeed = "";
     },
