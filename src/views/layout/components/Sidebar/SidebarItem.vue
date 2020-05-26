@@ -2,7 +2,7 @@
   <div>
     <div class="slide-bar-header">
       <img src="../../../../assets/logo.png">
-      <strong>互联网数据采集平台</strong>
+      <!-- <strong>互联网数据采集平台</strong> -->
     </div>
     <el-menu :defaultOpeneds="['/project']" :default-active="defautActive">
       <div v-for="(item, index) in routes" :key="index">
@@ -97,13 +97,8 @@ export default {
   height: 50px;
   
   img {
-    height: 30px;
-  }
-  strong {
-    display: block;
-    font-size: 18px;
-    color: white;
-    margin-left: 5px;
+    height: 65px;
+    margin-left: -20px;
   }
 }
 </style>
