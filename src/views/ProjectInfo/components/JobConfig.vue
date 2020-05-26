@@ -624,9 +624,9 @@ export default {
       },
       account_form: {
         domains: [
-          {"username": "taozi926494@sina.com", "password": "taozi926494!@#$%"},
-          {"username": "15288147845", "password": "Clc372493"},
-          {"username": "1030617785@qq.com", "password": "YGPCHQ19920612"}
+          // {"username": "taozi926494@sina.com", "password": "taozi926494!@#$%"},
+          // {"username": "15288147845", "password": "Clc372493"},
+          // {"username": "1030617785@qq.com", "password": "YGPCHQ19920612"}
         ]
       },
       scheduler_form: {
