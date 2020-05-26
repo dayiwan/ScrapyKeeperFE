@@ -3,6 +3,7 @@
     <transition-group name="breadcrumb">
       <div v-for="item in levelList" :key="item.path">
         <el-breadcrumb-item v-if="item.meta.title">
+          <span class="title">互联网数据采集平台 | </span>
           <span
             v-if="item.redirect==='noredirect'"
             class="no-redirect"
@@ -42,15 +43,18 @@ export default {
 };
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 .app-breadcrumb.el-breadcrumb {
-  display: inline-block;
-  font-size: 14px;
   line-height: 50px;
   margin-left: 10px;
-  .no-redirect {
-    color: #97a8be;
-    cursor: text;
-  }
 }
+  .el-breadcrumb__item {
+    a {
+      font-size: 16px !important;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: bolder !important;
+    }
+  }
 </style>
