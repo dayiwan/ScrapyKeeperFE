@@ -739,8 +739,8 @@ export default {
         this.$message.info({ message: '该种子已存在!', showClose: true })
       } else {
         this.seed_form.push(this.addFeed);
+        this.addFeed = "";
       }
-      this.addFeed = "";
     },
     // seed_form_remove(item) {
     //   var index = this.seed_form.domains.indexOf(item);
