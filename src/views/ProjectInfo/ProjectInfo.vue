@@ -141,8 +141,9 @@ export default {
       this.info = res;
 
       // 获取任务列表，将最近一次任务的配置传给配置组件
-      if (res.scheduler_list.length > 0) {
-        this.currentConfig = res.scheduler_list[0].config
+      const scheduler_len  = res.scheduler_list.length
+      if (scheduler_len > 0) {
+        this.currentConfig = res.scheduler_list[scheduler_len-1].config
       }
 
       // 筛选周期任务
