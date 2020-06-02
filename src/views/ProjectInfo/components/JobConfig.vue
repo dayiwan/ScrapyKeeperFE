@@ -67,10 +67,10 @@
           </el-form-item>
           <el-form-item label="访问代理的配置">
             <el-radio-group v-model="form.MIDDLEWARES_PROXY_OPEN">
-              <el-radio :label="1">无代理</el-radio>
-              <el-radio :label="2">启用代理</el-radio>
+              <el-radio :label="false">无代理</el-radio>
+              <el-radio :label="true">启用代理</el-radio>
             </el-radio-group>
-            <div v-if="form.MIDDLEWARES_PROXY_OPEN==2">
+            <div v-if="form.MIDDLEWARES_PROXY_OPEN==true">
               <el-select v-model="form.MIDDLEWARES_PROXY_VALUE" placeholder="请选择">
                 <el-option v-for="item in ip_proxy_option" :key="item" :label="item" :value="item"></el-option>
               </el-select>
@@ -88,30 +88,30 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="采集范围配置" name="采集范围配置">
-        <el-form ref="form.CRAWL_RANGE" :model="form.CRAWL_RANGE" label-width="200px">
+        <el-form ref="form" :model="form" label-width="200px">
           <el-form-item label="广度优先方式的层级配置">
-            <el-input-number v-model="form.CRAWL_RANGE.LEVEL" :step="1" :max="5"></el-input-number>
+            <el-input-number v-model="form.DEPTH_LIMIT" :step="1" :max="5"></el-input-number>
           </el-form-item>
           <el-form-item label="采集后缀过滤">
-            <el-input v-model="form.CRAWL_RANGE.SUFFIX" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_SUFFIX" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="采集层数过滤">
-            <el-input v-model="form.CRAWL_RANGE.DEEP_NUM" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_DEEP_NUM" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="站点过滤">
-            <el-input v-model="form.CRAWL_RANGE.SIZE_FILTERING" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_SIZE_FILTERING" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="URL正则过滤">
-            <el-input v-model="form.CRAWL_RANGE.URL_REGULAR" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_URL_REGULAR" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="协议过滤">
-            <el-input v-model="form.CRAWL_RANGE.PROTOCOL_FILTERING" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_PROTOCOL_FILTERING" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="站点最大页面数量">
-            <el-input v-model="form.CRAWL_RANGE.MAX_PAGE" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_MAX_PAGE" style="width:600px"></el-input>
           </el-form-item>
           <el-form-item label="站点子域名数量">
-            <el-input v-model="form.CRAWL_RANGE.SUBDOMAINS" style="width:600px"></el-input>
+            <el-input v-model="form.CRAWL_RANGE_SUBDOMAINS" style="width:600px"></el-input>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -119,8 +119,8 @@
         <el-form ref="form" :model="form" label-width="200px">
           <el-form-item label="页面优先级选择">
             <el-radio-group v-model="form.DEPTH_PRIORIT">
-              <el-radio :label="1">深度优先</el-radio>
-              <el-radio :label="2">广度优先</el-radio>
+              <el-radio :label="0">深度优先</el-radio>
+              <el-radio :label="-1">广度优先</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="日志等级">
@@ -262,13 +262,13 @@
             </el-input>
           </el-form-item>
           <el-form-item label="文件存储方式">
-            <el-radio-group v-model="form.MYSQL_TYPE">
+            <el-radio-group v-model="form.STORAGE_TYPE">
               <el-radio :label="1">本地模式</el-radio>
               <el-radio :label="2">FTP模式</el-radio>
               <el-radio :label="3">分布式文件系统</el-radio>
               <el-radio :label="4">数据库存储</el-radio>
             </el-radio-group>
-            <div v-if="form.MYSQL_TYPE == 1">
+            <div v-if="form.STORAGE_TYPE == 1">
               <el-input
                 placeholder="请输入内容"
                 v-model="form.DIRS"
@@ -277,10 +277,10 @@
                 <template slot="prepend">本地路径</template>
               </el-input>
             </div>
-            <div v-if="form.MYSQL_TYPE == 2">
+            <div v-if="form.STORAGE_TYPE == 2">
               <el-input
                 placeholder="请输入内容"
-                v-model="form.FTP_FORM.IP"
+                v-model="form.FTP_IP"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">地址</template>
@@ -288,7 +288,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.FTP_FORM.PORT"
+                v-model="form.FTP_PORT"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">端口</template>
@@ -296,7 +296,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.FTP_FORM.USERNAME"
+                v-model="form.FTP_USERNAME"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">用户</template>
@@ -304,13 +304,13 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.FTP_FORM.PASSWORD"
+                v-model="form.FTP_PASSWORD"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">密码</template>
               </el-input>
             </div>
-            <div v-if="form.MYSQL_TYPE == 3">
+            <div v-if="form.STORAGE_TYPE == 3">
               <el-input
                 placeholder="请输入内容"
                 v-model="form.FILE_UPLOAD_URL"
@@ -319,10 +319,10 @@
                 <template slot="prepend">上传接口</template>
               </el-input>
             </div>
-            <div v-if="form.MYSQL_TYPE == 4">
+            <div v-if="form.STORAGE_TYPE == 4">
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.IP"
+                v-model="form.DATABASE_IP"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">地址</template>
@@ -330,7 +330,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.PORT"
+                v-model="form.DATABASE_PORT"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">端口</template>
@@ -338,7 +338,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.USERNAME"
+                v-model="form.DATABASE_USERNAME"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">用户</template>
@@ -346,7 +346,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.PASSWORD"
+                v-model="form.DATABASE_PASSWORD"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">密码</template>
@@ -354,7 +354,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.DBNAME"
+                v-model="form.DATABASE_DBNAME"
                 style="margin:5px 0px; width:600px"
               >
                 <template slot="prepend">库名</template>
@@ -362,7 +362,7 @@
               <br />
               <el-input
                 placeholder="请输入内容"
-                v-model="form.DATABASE_FORM.TABLENAME"
+                v-model="form.DATABASE_TABLENAME"
               >
                 <template slot="prepend">表名</template>
               </el-input>
@@ -433,18 +433,18 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="启停策略" name="启停策略">
-        <el-form ref="form.SCHEDULER" :model="form.SCHEDULER">
+        <el-form ref="form" :model="form">
           <el-form-item label="启动方式">
-            <el-radio-group v-model="form.SCHEDULER.type">
+            <el-radio-group v-model="form.SCHEDULER_TYPE">
               <el-radio :label="1">手动-立即运行</el-radio>
               <el-radio :label="2">自动</el-radio>
             </el-radio-group>
-            <div v-if="form.SCHEDULER.type == 2">
+            <div v-if="form.SCHEDULER_TYPE == 2">
               <div class="tip">时间参数</div>
               <div class="sub">
                 <el-tabs type="border-card">
                   <el-tab-pane label="月份选择">
-                    <el-checkbox-group v-model="form.SCHEDULER.month">
+                    <el-checkbox-group v-model="form.SCHEDULER_MOUNTH">
                       <el-checkbox
                         v-for="month in 12"
                         :label="month"
@@ -453,7 +453,7 @@
                     </el-checkbox-group>
                   </el-tab-pane>
                   <el-tab-pane label="天选择">
-                    <el-checkbox-group v-model="form.SCHEDULER.day">
+                    <el-checkbox-group v-model="form.SCHEDULER_DAY">
                       <el-checkbox
                         v-for="day in 31"
                         :label="day"
@@ -462,7 +462,7 @@
                     </el-checkbox-group>
                   </el-tab-pane>
                   <el-tab-pane label="小时选择">
-                    <el-checkbox-group v-model="form.SCHEDULER.hour">
+                    <el-checkbox-group v-model="form.SCHEDULER_HOUR">
                       <el-checkbox
                         v-for="hour in 24"
                         :label="hour-1"
@@ -471,7 +471,7 @@
                     </el-checkbox-group>
                   </el-tab-pane>
                   <el-tab-pane label="分钟选择">
-                    <el-checkbox-group v-model="form.SCHEDULER.minutes">
+                    <el-checkbox-group v-model="form.SCHEDULER_MINUTE">
                       <el-checkbox
                         v-for="minute in 60"
                         :label="minute-1"
@@ -485,7 +485,7 @@
               <div class="sub">
                 <el-input
                   type="text"
-                  v-model="form.SCHEDULER.description"
+                  v-model="form.SCHEDULER_DESCRIPTION"
                   maxlength="30"
                   :show-word-limit="true"
                   placeholder="请输入简短的调度描述，如，每天12点"
@@ -543,6 +543,11 @@ export default {
         // this.data_return_form = JSON.parse(jsonVal.data_return_form);
         // this.scheduler_form = JSON.parse(jsonVal.scheduler_form);
       }
+    },
+    // 监听已有种子的变化
+    seed_str: function(val) {
+      this.form.SEED_LIST = val.split('\n')
+      this.form.SEED_LIST.pop(-1)
     }
   },
   data() {
@@ -558,29 +563,25 @@ export default {
         RETRY_TIMES: 1,  // 下载失败重试次数
         CONCURRENT_REQUESTS: 8, // 请求线程数
         DOWNLOAD_DELAY: 0.5, // 下载延迟
-        DOWNLOAD_TIMEOUT: 180, //下载超时时间
+        DOWNLOAD_TIMEOUT: 180, //连接超时时间
         DOWNLOAD_SPEED: 1024, //下载速度
         DOWNLOAD_SIZE: 32, //单个文件下载最大的大小
-        DNSCACHE_ENABLED: 'True', //启用DNS内存缓存
         DNSCACHE_SIZE: 10000,  //DNS内存缓存大小
-        DNS_TIMEOUT: 60, //DNS查询超时时间，以秒为单位
-        MIDDLEWARES_PROXY_OPEN: 1, //是否开启ip代理
+        MIDDLEWARES_PROXY_OPEN: false, //是否开启ip代理
         MIDDLEWARES_PROXY_VALUE: '所有请求',  //启用代理方式
-        MIDDLEWARES_PROXY_URL: 'http://10.5.9.119:5060/proxy_ip', //代理ip地址
+        MIDDLEWARES_PROXY_URL: 'http://10.5.9.119:5060/proxy_ip', //代理接口ip地址
         //采集范围配置
-        CRAWL_RANGE: {
-          LEVEL: 1,  //广度有限方式的层级配置
-          SUFFIX: "", //采集后缀过滤
-          DEEP_NUM: 3, // 采集层数过滤
-          SIZE_FILTERING: 50,  // 站点过滤
-          URL_REGULAR: "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",  //url正则过滤
-          PROTOCOL_FILTERING: "http,https", //协议过滤
-          MAX_PAGE: 100000,  //站点最大页面数量
-          SUBDOMAINS: 5  //站点子域名数量
-        },
+        DEPTH_LIMIT: 0,  //广度有限方式的层级配置
+        CRAWL_RANGE_SUFFIX: "html,shtml", //采集后缀过滤
+        CRAWL_RANGE_DEEP_NUM: 3, // 采集层数过滤
+        CRAWL_RANGE_SIZE_FILTERING: 50,  // 站点过滤
+        CRAWL_RANGE_URL_REGULAR: "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*,]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",  //url正则过滤
+        CRAWL_RANGE_PROTOCOL_FILTERING: "http,https", //协议过滤
+        CRAWL_RANGE_MAX_PAGE: 100000,  //站点最大页面数量
+        CRAWL_RANGE_SUBDOMAINS: 5,  //站点子域名数量
         //采集策略配置
         LOG_LEVEL: 'INFO', //日志等级
-        DEPTH_PRIORIT: 1,  //遍历方法，1为深度优先，2为广度优先
+        DEPTH_PRIORIT: 0,  //遍历方法，0为深度优先，-1为广度优先
         //资源抽取配置
         SUFFIX:'html,shtml',  //后缀模式
         AGREEMENT_TYPE: 'http,https', //协议类型
@@ -600,39 +601,33 @@ export default {
         MYSQL_USERNAME: "root", //mysql用户名
         MYSQL_PASSWORD: 'root', //mysql密码
         MYSQL_PORT: "3306", //mysql端口
-        MYSQL_TYPE: 3, //文件存储方式
+        STORAGE_TYPE: 3, //文件存储方式
         DIRS: 'D://pythonWorkSpace//spider//test_debug//debug', //本地存储路径
-        FTP_FORM:{   //ftp存储方式表单
-          IP: "http://10.5.9.84:8084/fdfs/uploads",  //ip
-          PORT: '3360', // 端口号
-          USERNAME: 'root', //用户名
-          PASSWORD: "root", //密码
-        },
+        FTP_IP: "http://10.5.9.84:8084/fdfs/uploads",  //ftp ip
+        FTP_PORT: '3360', // ftp端口号
+        FTP_USERNAME: 'root', //ftp用户名
+        FTP_PASSWORD: "root", //ftp密码
         FILE_UPLOAD_URL: 'http://172.16.119.13/dcy-file/fdfs/upload', //分布式存储文件上传接口
-        DATABASE_FORM:{  //数据库存储方式表单
-          IP: '172.16.13.22', //ip
-          PORT: '3360', //端口
-          USERNAME: 'root',  //用户名
-          PASSWORD: 'root', //密码
-          DBNAME: 'duocaiyunDB', //数据库名
-          TABLENAME: 'duocaiyun' // 表名
-        },
+        DATABASE_IP: '172.16.13.22', ///数据库ip
+        DATABASE_PORT: '3360', ///数据库端口
+        DATABASE_USERNAME: 'root',  ///数据库用户名
+        DATABASE_PASSWORD: 'root', ///数据库密码
+        DATABASE_DBNAME: 'duocaiyunDB', //数据库名
+        DATABASE_TABLENAME: 'duocaiyun', // /数据库表名
         //数据回传
         DATA_CALLBACK_URL: "http://172.16.13.22:5060/data_storage", //数据回传url
         DATA_CALLBACK_SIZE: '300', //回传大小
         //APP key管理
-        APP_KEY: [{ key: '' }],
+        APP_KEY: [{ key: '' }],  // APP key列表
         //账号管理
-        ACCOUNT_LIST: [{username: 'regfreg', password: 'fverfgtrwhb'}],  //账号管理
+        ACCOUNT_LIST: [{"username": "taozi926494@sina.com", "password": "taozi926494!@#$%"}],  //账号管理
         //启停策略
-        SCHEDULER: {
-          type: 1,   //启动方式1手动 2自动
-          month: [1,2,3,4,5,6,7,8,9,10,11,12], //月份
-          day: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], //天
-          hour: [12], //小时
-          minutes: [0], //分钟
-          description: '每天12点执行'  //描述
-        }
+        SCHEDULER_TYPE: 1,   //启动方式1手动 2自动
+        SCHEDULER_MOUNTH: [1,2,3,4,5,6,7,8,9,10,11,12], //月份
+        SCHEDULER_DAY: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], //天
+        SCHEDULER_HOUR: [12], //小时
+        SCHEDULER_MINUTE: [0], //分钟
+        SCHEDULER_DESCRIPTION: '每天12点执行'  //描述
       }
     };
   },
