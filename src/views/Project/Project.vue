@@ -1,12 +1,7 @@
 <template>
   <div class="app-container">
     <!-- 筛选、搜索、添加项目 -->
-    <Toolbar
-      :options="toolOptions"
-      @Cate="Cate"
-      @State="State"
-      @Search="Search"
-    />
+    <Toolbar :options="toolOptions" @Cate="Cate" @State="State" @Search="Search" />
     <!-- 项目列表 -->
     <el-table
       :data="list"
@@ -16,11 +11,11 @@
       style="width: 100%"
     >
       <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
-      <el-table-column label="名称"  width="350" prop="project_name_zh"></el-table-column>
+      <el-table-column label="名称" width="350" prop="project_name_zh"></el-table-column>
       <el-table-column label="分类">
         <template
-          slot-scope="scope">{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}
-        </template>
+          slot-scope="scope"
+        >{{ categoryMap[scope.row.category]? categoryMap[scope.row.category]:'其他' }}</template>
       </el-table-column>
       <el-table-column label="发布时间" prop="date_created"></el-table-column>
       <el-table-column align="center" label="待采队列">
@@ -43,8 +38,12 @@
       </el-table-column>
       <el-table-column align="center" label="健康状态">
         <template slot-scope="scope">
-          <span class="error-info" @click="elk_error_log_click(scope.row.project_name)" v-if="scope.row.error > 0">{{ scope.row.error | ellipsis }}</span>
-          <label for="">{{ scope.row.error | rangeRank }}</label>
+          <span
+            class="error-info"
+            @click="elk_error_log_click(scope.row.project_name)"
+            v-if="scope.row.error > 0"
+          >{{ scope.row.error | ellipsis }}</span>
+          <label for>{{ scope.row.error | rangeRank }}</label>
         </template>
       </el-table-column>
       <el-table-column align="center" label="详情">
@@ -92,7 +91,6 @@
       @dataTrendCancle="dataTrendCancle"
     />
 
-
     <el-dialog :visible.sync="elk.elk_error_log" :show-close="false" :close-on-click-modal="false">
       <div class="title">错误日志信息</div>
       <div class="content">
@@ -132,7 +130,7 @@ export default {
     RedisDialog,
     Toolbar,
     DataTrend,
-    DataDetail,
+    DataDetail
   },
   data() {
     return {
@@ -184,7 +182,6 @@ export default {
         elk_error_log: false,
         elk_error_log_list: []
       }
-     
     };
   },
   mounted() {
@@ -205,36 +202,36 @@ export default {
         return value;
       }
     },
-    rangeRank(value) { 
+    rangeRank(value) {
       if (value < 1) {
-        return '良好'
+        return "良好";
       } else if (value >= 1 && value < 50) {
-        return '存在错误'
+        return "存在错误";
       } else if (value >= 50 && value < 100) {
-        return '一般错误'
+        return "一般错误";
       } else if (value >= 100 && value < 500) {
-        return '较多错误'
+        return "较多错误";
       } else {
-        return '严重错误'
+        return "严重错误";
       }
     }
   },
   methods: {
     // 点开elk的错误信息
     async elk_error_log_click(project_name) {
-      this.elk.elk_error_log  = true;
+      this.elk.elk_error_log = true;
       this.elk.project_name = project_name;
       var form = {
         project_name: this.elk.project_name,
         page: 1,
         page_size: 50
-      }
+      };
       const res = await getJournakApi(form);
       this.elk.elk_error_log_list = res;
     },
     // 关闭elk的错误信息对话框
     close_elk_error_log(project_name) {
-      this.elk.elk_error_log  = false;
+      this.elk.elk_error_log = false;
       this.elk.elk_error_log_list = [];
       this.elk.project_name = null;
     },
@@ -246,7 +243,7 @@ export default {
       };
       const res = await delJournakApi(params);
       this.$message.success("提交成功！");
-      this.elk.elk_error_log  = false;
+      this.elk.elk_error_log = false;
       await this.listProject();
     },
     // 确认添加参数
@@ -287,45 +284,46 @@ export default {
     //查看数据详情
     async dataDetail(form) {
       this.title = "数据详情";
+      this.Detail.header = [];
+      this.Detail.content = [];
       this.listLoading = true;
       var params = {
         project_name: form.project_name,
-        project_id: parseInt(form.id) 
+        project_id: parseInt(form.id)
       };
-      var res;
-      try{
-        res = await apiGetDataDetail(params);
-      }catch(err) {
+      try {
+        var res = await apiGetDataDetail(params);
+        if (res !== []) {
+          this.Detail.content = res;
+          for (let item in res[0]) {
+            this.Detail.header.push(item);
+          }
+        } else {
+          this.Detail.header = [];
+          this.Detail.content = [];
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
         this.Detail.detail = true;
         this.listLoading = false;
-      } 
-      if (res !== []) {
-        this.Detail.content = res;
-        for (let item in res[0]) {
-          this.Detail.header.push(item);
-        }
-      } else {
-        this.Detail.header = [];
-        this.Detail.content = [];
       }
-      this.Detail.detail = true;
-      this.listLoading = false;
-  },
+    },
     // 查看待采队列
     async spareUrl(form) {
       this.redisTitle = "待采队列";
       this.listLoading = true;
       var params = {
         project_name: form.project_name,
-        project_id: parseInt(form.id) 
+        project_id: parseInt(form.id)
       };
-      console.log(params)
+      console.log(params);
       const res = await apiGetSpareUrl(params);
       this.redisUrlList = res;
       this.redisDialogShow = true;
       this.listLoading = false;
     },
-    redisDagViewCancle(){
+    redisDagViewCancle() {
       this.redisDialogShow = false;
       this.redisTitle = "";
       this.redisUrlList = [];
@@ -422,7 +420,7 @@ export default {
       this.list = res.data;
       this.pagination.total = res.total;
     },
-  
+
     // 添加工程
     async addProject(form) {
       this.addProjShow = false;
