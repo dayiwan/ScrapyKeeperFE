@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="slide-bar-header">
-      <img src="../../../../assets/logo.png">
+      <img class="cetc" v-if="cetc" src="../../../../assets/cetclogo.png">
+      <img v-else src="../../../../assets/logo.png">
       <!-- <strong>互联网数据采集平台</strong> -->
     </div>
     <el-menu :defaultOpeneds="['/project']" :default-active="defautActive">
@@ -67,6 +68,14 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      cetc: false
+    }
+  },
+  created() {
+    this.getIp()
+  },
   computed: {
     defautActive: function() {
       const path = this.$route.path;
@@ -78,6 +87,14 @@ export default {
     }
   },
   methods: {
+    getIp() {
+      var url = window.location.href
+      if (url.indexOf('http://172') > -1) {
+        this.cetc = true 
+      } else {
+        this.cetc = false
+      }
+    },
     hasOneShowingChildren(children) {
       const showingChildren = children.filter(item => {
         return !item.hidden;
@@ -99,6 +116,11 @@ export default {
   img {
     height: 65px;
     margin-left: -20px;
+  }
+  .cetc {
+    margin-top: -5px;
+    height: 35px;
+    width: 115px;
   }
 }
 </style>
