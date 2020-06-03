@@ -134,7 +134,7 @@ export default {
       }).then(async () => {
         try {
           this.loading = true;
-          await apiProxyIp.delete(id);
+          await apiProxyIp.delete({ id });
           this.$message.success("删除成功");
         } finally {
           await this.listAgency();
