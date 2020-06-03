@@ -10,7 +10,7 @@ module.exports = {
             }
         }
     },
-    assetsDir: "static",
+    assetsDir: "dcy-das",
     //打包配置
     // publicPath: './',
     //svg

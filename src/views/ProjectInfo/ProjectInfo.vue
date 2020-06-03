@@ -101,7 +101,6 @@ import { apidCancleRunning } from "@/api/scheduler";
 import LogDialog from "../Project/components/LogDialog";
 import JobConfig from "./components/JobConfig";
 
-
 export default {
   components: {
     JobConfig,
@@ -110,7 +109,7 @@ export default {
   data() {
     return {
       log_dialog: false,
-      title: '日志信息',
+      title: "日志信息",
       logList: [],
       info: {
         project_name: null,
@@ -142,21 +141,21 @@ export default {
 
       // 获取任务列表，将最近一次任务的配置传给配置组件
       if (res.scheduler_list.length > 0) {
-        this.currentConfig = res.scheduler_list[0].config
+        this.currentConfig = res.scheduler_list[0].config;
       }
 
       // 筛选周期任务
-      this.schedulerList = []
+      this.schedulerList = [];
       for (const scheduler of res.scheduler_list) {
-        if (scheduler.run_type != 'onetime') {
-          this.schedulerList.push(this.$deepcopy(scheduler))
+        if (scheduler.run_type != "onetime") {
+          this.schedulerList.push(this.$deepcopy(scheduler));
         }
       }
     },
     // 取消正在运行
     async cancel_running(scheduler_id) {
       let res = await apidCancleRunning(scheduler_id);
-      if(res) {
+      if (res) {
         this.$message.success("取消成功！");
         this.getPorject();
       }
@@ -168,26 +167,34 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(async () => {
+        const loading = this.$loading({
+          lock: true,
+          spinner: "el-icon-loading"
+        });
         var form = {
           project_id: project_id,
           project_name: project_name
         };
-        await apiDelProject(form);
-        this.$message.success("删除成功！");
-        this.$router.push({
-          path: "/project"
-        });
+        try {
+          await apiDelProject(form);
+          this.$message.success("删除成功！");
+          this.$router.push({
+            path: "/project"
+          });
+        } finally {
+          loading.close();
+        }
       });
     },
     // 查看节点的日志信息
     async view_log(scheduler_id, node_type) {
-      this.log_dialog = true
+      this.log_dialog = true;
       var form = {
         scheduler_id: scheduler_id,
         node_type: node_type
-      }
-      const res = await apiOriginalLog.get(form)
-      this.logList= res
+      };
+      const res = await apiOriginalLog.get(form);
+      this.logList = res;
     },
     //退出日志详情 || 待采队列对话框
     logViewCancle() {
@@ -200,7 +207,7 @@ export default {
       var form = {
         project_id: project_id,
         scheduler_id: scheduler_id
-      }
+      };
       const loading = this.$loading({
         lock: true,
         spinner: "el-icon-loading"
